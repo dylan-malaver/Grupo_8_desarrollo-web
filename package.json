@@ -1,0 +1,12 @@
+{
+  "name": "floristeria-andrea",
+  "version": "1.0.0",
+  "description": "Proyecto Integrador - Floristería Andrea",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
