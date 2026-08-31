@@ -1,1 +1,170 @@
+/* Reset global y fuentes */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
+body {
+    background-color: #faf5f5;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Header & Navbar */
+header {
+    background-color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 5%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.logo h1 {
+    font-size: 1.5rem;
+    color: #8b263e;
+}
+
+.logo p {
+    font-size: 0.8rem;
+    color: #777;
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+    gap: 1.5rem;
+}
+
+nav a {
+    text-decoration: none;
+    color: #444;
+    font-weight: 500;
+}
+
+/* Botones */
+.btn {
+    display: inline-block;
+    padding: 0.5rem 1.2rem;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border: 1px solid #d88195;
+    color: #d88195;
+    background: transparent;
+    transition: 0.3s;
+}
+
+.btn-primary {
+    background-color: #d88195;
+    color: #fff;
+}
+
+.btn-whatsapp {
+    background-color: #25d366;
+    color: white;
+    border: none;
+}
+
+.btn:hover {
+    opacity: 0.85;
+}
+
+/* Hero Section */
+.hero {
+    text-align: center;
+    padding: 4rem 1rem;
+    background-color: #fff2f4;
+}
+
+.hero h2 {
+    font-size: 2.2rem;
+    color: #8b263e;
+    max-width: 700px;
+    margin: 1rem auto;
+}
+
+/* Grillas / Cards */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    padding: 2rem 5%;
+}
+
+.card, .product-card, .feature-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.price {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #8b263e;
+    margin: 0.5rem 0;
+}
+
+/* Formularios de Login y Registro */
+.auth-container, .product-detail-container, .cart-container {
+    max-width: 900px;
+    margin: 3rem auto;
+    padding: 0 1rem;
+}
+
+.auth-form {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    max-width: 450px;
+    margin: auto;
+}
+
+.form-control {
+    margin-bottom: 1.2rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-control label {
+    margin-bottom: 0.3rem;
+    font-size: 0.9rem;
+}
+
+.form-control input {
+    padding: 0.6rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Footer */
+footer {
+    background-color: #2b2b2b;
+    color: #fff;
+    padding: 3rem 5% 1rem;
+    margin-top: 4rem;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+}
+
+.footer-content a {
+    color: #ccc;
+    text-decoration: none;
+}
+
+.copyright {
+    text-align: center;
+    margin-top: 2rem;
+    font-size: 0.8rem;
+    color: #aaa;
+}
