@@ -1,1 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito de Compras | Floristería Andrea</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
 
+    <!-- Encabezado / Navbar -->
+    <header>
+        <div class="logo">
+            <h1>Floristería Andrea</h1>
+            <p>San Gil, Santander</p>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="/">Inicio</a></li>
+                <li><a href="/#categorias">Categorías</a></li>
+                <li><a href="/#productos">Productos</a></li>
+            </ul>
+        </nav>
+        <div class="auth-buttons">
+            <a href="/login" class="btn">Iniciar sesión</a>
+            <a href="/registro" class="btn btn-primary">Registrarse</a>
+        </div>
+    </header>
+
+    <!-- Carrito de Compras -->
+    <main class="cart-container">
+        <h2>Tu Carrito de Compras</h2>
+
+        <div class="cart-content">
+            <!-- Lista de productos -->
+            <section class="cart-items">
+                <article class="cart-item">
+                    <div class="item-img-placeholder">[ Imagen ]</div>
+                    <div class="item-details">
+                        <h3>Ramo de Rosas Rojas</h3>
+                        <p class="unit-price">Precio: $85.000 COP</p>
+                        <div class="quantity-controls">
+                            <button type="button" class="btn-qty">-</button>
+                            <span>1</span>
+                            <button type="button" class="btn-qty">+</button>
+                        </div>
+                    </div>
+                    <div class="item-total">
+                        <p>$85.000 COP</p>
+                        <button type="button" class="btn-delete">Eliminar</button>
+                    </div>
+                </article>
+
+                <article class="cart-item">
+                    <div class="item-img-placeholder">[ Imagen ]</div>
+                    <div class="item-details">
+                        <h3>Detalle Floral Romántico</h3>
+                        <p class="unit-price">Precio: $95.000 COP</p>
+                        <div class="quantity-controls">
+                            <button type="button" class="btn-qty">-</button>
+                            <span>1</span>
+                            <button type="button" class="btn-qty">+</button>
+                        </div>
+                    </div>
+                    <div class="item-total">
+                        <p>$95.000 COP</p>
+                        <button type="button" class="btn-delete">Eliminar</button>
+                    </div>
+                </article>
+            </section>
+
+            <!-- Resumen de compra -->
+            <aside class="cart-summary">
+                <h3>Resumen de la compra</h3>
+                <div class="summary-line">
+                    <span>Subtotal:</span>
+                    <span>$180.000 COP</span>
+                </div>
+                <div class="summary-line">
+                    <span>Envío a domicilio (San Gil):</span>
+                    <span>$8.000 COP</span>
+                </div>
+                <hr>
+                <div class="summary-line total">
+                    <strong>Total:</strong>
+                    <strong>$188.000 COP</strong>
+                </div>
+                <button type="button" class="btn btn-primary btn-block">Finalizar Compra</button>
+            </aside>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div>
+                <h3>Floristería Andrea</h3>
+                <p>Flores y detalles para momentos especiales en San Gil, Santander.</p>
+            </div>
+            <div>
+                <h4>Contacto Oficial</h4>
+                <p>Cra. 8 No. 12-17, Edificio Santa Cruz, Local 1</p>
+                <p>San Gil, Santander | Tel: 301 582 1863</p>
+            </div>
+        </div>
+        <p class="copyright">&copy; 2026 Floristería Andrea — Proyecto académico universitario.</p>
+    </footer>
+
+</body>
+</html>
