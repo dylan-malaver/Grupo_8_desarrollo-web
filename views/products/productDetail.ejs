@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<%- include('../partials/head', { title: product.name + ' | Floristería Andrea', styles: ['/css/product-detail.css'] }) %>
+<body>
+
+    <%- include('../partials/header') %>
+
+    <main>
+
+        <!-- ===== Detalle del producto ===== -->
+        <section class="product-detail">
+            <nav class="breadcrumb" aria-label="Ruta de navegación">
+                <a href="/">Inicio</a> /
+                <a href="/productos">Productos</a> /
+                <a href="/productos?categoria=<%= product.categorySlug %>"><%= product.category %></a> /
+                <span aria-current="page"><%= product.name %></span>
+            </nav>
+
+            <div class="detail-grid">
+                <div class="detail-image">
+                    <img src="/img/<%= product.image %>" alt="<%= product.alt %>">
+                </div>
+
+                <div class="detail-info">
+                    <p class="detail-category"><%= product.category %></p>
+                    <h1 class="detail-title"><%= product.name %></h1>
+                    <p class="detail-desc">
+                        <%= product.description %>
+                    </p>
+
+                    <p class="detail-price"><%= formatPrice(product.price) %></p>
+                    <p class="detail-availability">Disponible para pedido</p>
+
+                    <form action="/carrito" method="GET" class="purchase-form">
+                        <input type="hidden" name="producto" value="<%= product.id %>">
+                        <label for="quantity" class="qty-label">Cantidad</label>
+
+                        <div class="qty-selector">
+                            <button type="button" id="qty-minus" aria-label="Disminuir cantidad">-</button>
+                            <input type="number" id="quantity" name="quantity" value="1" min="1" max="10">
+                            <button type="button" id="qty-plus" aria-label="Aumentar cantidad">+</button>
+                        </div>
+
+                        <div class="detail-actions">
+                            <button type="submit" class="btn btn-coral">🛒 Agregar al carrito</button>
+                            <a href="/carrito?producto=<%= product.id %>" class="btn btn-whatsapp">Comprar ahora</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== Pestañas: Descripción / Detalles / Cuidados ===== -->
+        <section class="product-tabs">
+            <div class="tabs-box">
+                <div class="tab-list" role="tablist" aria-label="Información del producto">
+                    <button type="button" class="tab-btn active" role="tab" id="tab-desc"
+                            aria-selected="true" aria-controls="panel-desc">Descripción</button>
+                    <button type="button" class="tab-btn" role="tab" id="tab-det"
+                            aria-selected="false" aria-controls="panel-det">Detalles</button>
+                    <button type="button" class="tab-btn" role="tab" id="tab-cui"
+                            aria-selected="false" aria-controls="panel-cui">Cuidados</button>
+                </div>
+
+                <div class="tab-panel" role="tabpanel" id="panel-desc" aria-labelledby="tab-desc">
+                    <h3>Descripción</h3>
+                    <p><%= product.description %></p>
+                </div>
+
+                <div class="tab-panel" role="tabpanel" id="panel-det" aria-labelledby="tab-det" hidden>
+                    <h3>Detalles</h3>
+                    <p><%= product.details %></p>
+                </div>
+
+                <div class="tab-panel" role="tabpanel" id="panel-cui" aria-labelledby="tab-cui" hidden>
+                    <h3>Cuidados</h3>
+                    <p><%= product.care %></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== También te puede interesar ===== -->
+        <section class="products related">
+            <h2 class="section-title">También te puede interesar</h2>
+            <p class="section-subtitle">Explora otras opciones florales en el catálogo</p>
+
+            <div class="product-grid">
+                <% related.forEach(function (item) { %>
+                    <%- include('../partials/product-card', { product: item }) %>
+                <% }); %>
+            </div>
+        </section>
+
+    </main>
+
+    <%- include('../partials/footer') %>
+
+    <script>
+        // ----- Selector de cantidad (- / +), entre 1 y 10 -----
+        (function () {
+            var input = document.getElementById('quantity');
+            var min = 1;
+            var max = 10;
+
+            function clamp(value) {
+                value = parseInt(value, 10);
+                if (isNaN(value) || value < min) return min;
+                if (value > max) return max;
+                return value;
+            }
+
+            document.getElementById('qty-minus').addEventListener('click', function () {
+                input.value = clamp(parseInt(input.value, 10) - 1);
+            });
+            document.getElementById('qty-plus').addEventListener('click', function () {
+                input.value = clamp(parseInt(input.value, 10) + 1);
+            });
+            input.addEventListener('change', function () {
+                input.value = clamp(input.value);
+            });
+        })();
+
+        // ----- Pestañas: Descripción / Detalles / Cuidados -----
+        (function () {
+            var tabs = document.querySelectorAll('.tab-btn');
+            var panels = document.querySelectorAll('.tab-panel');
+
+            tabs.forEach(function (tab) {
+                tab.addEventListener('click', function () {
+                    tabs.forEach(function (t) {
+                        t.classList.remove('active');
+                        t.setAttribute('aria-selected', 'false');
+                    });
+                    panels.forEach(function (p) { p.hidden = true; });
+
+                    tab.classList.add('active');
+                    tab.setAttribute('aria-selected', 'true');
+                    document.getElementById(tab.getAttribute('aria-controls')).hidden = false;
+                });
+            });
+        })();
+    </script>
+
+</body>
+</html>

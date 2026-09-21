@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<%- include('../partials/head', { title: 'Crear Cuenta | Floristería Andrea', styles: ['/css/auth.css'] }) %>
+<body>
+
+    <%- include('../partials/header') %>
+
+    <main>
+
+        <!-- ===== Ruta de navegación ===== -->
+        <section class="auth-crumb">
+            <nav class="auth-breadcrumb" aria-label="Ruta de navegación">
+                <a href="/">Inicio</a> / <span aria-current="page">Registro</span>
+            </nav>
+        </section>
+
+        <!-- ===== Registro ===== -->
+        <section class="auth-section">
+            <div class="auth-layout">
+
+                <!-- Columna izquierda: imagen + mensaje -->
+                <aside class="auth-side">
+                    <div class="auth-media">
+                        <img src="/img/auth-tulipanes.jpg" alt="Tulipanes morados con gotas de agua">
+                    </div>
+                    <div class="auth-side-text">
+                        <h2>Haz que cada momento sea especial</h2>
+                        <p>Descubre flores y detalles pensados para acompañar tus momentos más importantes.</p>
+                    </div>
+                </aside>
+
+                <!-- Columna derecha: formulario -->
+                <div class="auth-panel auth-panel--card">
+                    <form id="register-form" method="POST" action="/registro" novalidate>
+                        <p class="auth-eyebrow is-caps">Floristería Andrea</p>
+                        <h1 class="auth-title">Crear una cuenta</h1>
+                        <p class="auth-lead">Regístrate para disfrutar de una mejor experiencia más sencilla al explorar y realizar tus pedidos.</p>
+
+                        <div class="field">
+                            <label for="fullname">Nombre completo</label>
+                            <input type="text" id="fullname" name="fullname" placeholder="Ingresa tu nombre completo"
+                                   autocomplete="name" required aria-describedby="fullname-error">
+                            <small class="field-error" id="fullname-error"></small>
+                        </div>
+
+                        <div class="field">
+                            <label for="email">Correo electrónico</label>
+                            <input type="email" id="email" name="email" placeholder="ejemplo@correo.com"
+                                   autocomplete="email" required aria-describedby="email-error">
+                            <small class="field-error" id="email-error"></small>
+                        </div>
+
+                        <div class="field">
+                            <label for="phone">Número de teléfono</label>
+                            <input type="tel" id="phone" name="phone" placeholder="301 000 0000"
+                                   autocomplete="tel" required aria-describedby="phone-error">
+                            <small class="field-error" id="phone-error"></small>
+                        </div>
+
+                        <div class="field">
+                            <label for="password">Contraseña</label>
+                            <div class="password-field">
+                                <input type="password" id="password" name="password" placeholder="Crea una contraseña"
+                                       autocomplete="new-password" required aria-describedby="password-error">
+                                <button type="button" class="toggle-pass" data-target="password"
+                                        aria-label="Mostrar contraseña" aria-pressed="false">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/>
+                                        <circle cx="12" cy="12" r="3"/>
+                                        <line class="eye-slash" x1="3" y1="21" x2="21" y2="3"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <small class="field-error" id="password-error"></small>
+                        </div>
+
+                        <div class="field">
+                            <label for="confirmPassword">Confirmar contraseña</label>
+                            <div class="password-field">
+                                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Repite tu contraseña"
+                                       autocomplete="new-password" required aria-describedby="confirmPassword-error">
+                                <button type="button" class="toggle-pass" data-target="confirmPassword"
+                                        aria-label="Mostrar contraseña" aria-pressed="false">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/>
+                                        <circle cx="12" cy="12" r="3"/>
+                                        <line class="eye-slash" x1="3" y1="21" x2="21" y2="3"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <small class="field-error" id="confirmPassword-error"></small>
+                        </div>
+
+                        <div class="field field-check">
+                            <div class="check-row">
+                                <input type="checkbox" id="terms" name="terms" required aria-describedby="terms-error">
+                                <label for="terms">
+                                    Acepto los <a href="#" class="link-red">términos y condiciones</a> y la
+                                    <a href="#" class="link-red">política de privacidad</a>
+                                </label>
+                            </div>
+                            <small class="field-error" id="terms-error"></small>
+                        </div>
+
+                        <button type="submit" class="btn-submit">Crear cuenta</button>
+
+                        <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+
+                        <div class="auth-switch">
+                            <span>¿Ya tienes una cuenta?</span>
+                            <a href="/login" class="link-red">Inicia sesión</a>
+                        </div>
+
+                        <p class="auth-note is-pill">❤ Tus datos utilizados únicamente para gestionar tu cuenta y tus pedidos.</p>
+                    </form>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <%- include('../partials/footer') %>
+
+    <script>
+        (function () {
+            var form = document.getElementById('register-form');
+            var status = document.getElementById('form-status');
+            var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            var passwordInput = document.getElementById('password');
+            var confirmInput = document.getElementById('confirmPassword');
+
+            // ----- Reglas de cada campo (devuelven el mensaje de error, o '' si está bien) -----
+            var fields = {
+                fullname: {
+                    input: document.getElementById('fullname'),
+                    validate: function (input) {
+                        var value = input.value.trim();
+                        if (!value) return '* El nombre completo es obligatorio';
+                        if (value.length < 3) return '* Escribe tu nombre completo (mínimo 3 letras)';
+                        return '';
+                    }
+                },
+                email: {
+                    input: document.getElementById('email'),
+                    validate: function (input) {
+                        var value = input.value.trim();
+                        if (!value) return '* El correo electrónico es obligatorio';
+                        if (!EMAIL_RE.test(value)) return '* Ingresa un correo válido, por ejemplo ejemplo@correo.com';
+                        return '';
+                    }
+                },
+                phone: {
+                    input: document.getElementById('phone'),
+                    validate: function (input) {
+                        var value = input.value.trim();
+                        if (!value) return '* El número de teléfono es obligatorio';
+
+                        // Acepta espacios, guiones, paréntesis y el indicativo +57
+                        var digits = value.replace(/\D/g, '');
+                        if (digits.length === 12 && digits.indexOf('57') === 0) digits = digits.slice(2);
+                        if (digits.length !== 10) return '* Ingresa un número de 10 dígitos, por ejemplo 301 582 1863';
+                        return '';
+                    }
+                },
+                password: {
+                    input: passwordInput,
+                    validate: function (input) {
+                        if (!input.value) return '* La contraseña es obligatoria';
+                        if (input.value.length < 6) return '* La contraseña debe tener mínimo 6 caracteres';
+                        return '';
+                    }
+                },
+                confirmPassword: {
+                    input: confirmInput,
+                    validate: function (input) {
+                        if (!input.value) return '* Confirma tu contraseña';
+                        if (input.value !== passwordInput.value) return '* Las contraseñas no coinciden';
+                        return '';
+                    }
+                },
+                terms: {
+                    input: document.getElementById('terms'),
+                    validate: function (input) {
+                        if (!input.checked) return '* Debes aceptar los términos y la política de privacidad';
+                        return '';
+                    }
+                }
+            };
+
+            // Muestra u oculta el error de un campo. Devuelve true si el campo es válido.
+            function checkField(name) {
+                var field = fields[name];
+                var message = field.validate(field.input);
+                var wrapper = field.input.closest('.field');
+
+                document.getElementById(name + '-error').textContent = message;
+                wrapper.classList.toggle('has-error', message !== '');
+                field.input.setAttribute('aria-invalid', message !== '' ? 'true' : 'false');
+
+                return message === '';
+            }
+
+            Object.keys(fields).forEach(function (name) {
+                var input = fields[name].input;
+                var wrapper = input.closest('.field');
+
+                // Al salir del campo se valida; mientras se corrige, el error desaparece apenas queda bien
+                input.addEventListener(input.type === 'checkbox' ? 'change' : 'blur', function () { checkField(name); });
+                input.addEventListener('input', function () {
+                    if (wrapper.classList.contains('has-error')) checkField(name);
+                });
+            });
+
+            // Si cambia la contraseña, se vuelve a comparar con la confirmación
+            passwordInput.addEventListener('input', function () {
+                if (confirmInput.value) checkField('confirmPassword');
+            });
+
+            // ----- Ojito para mostrar u ocultar la contraseña -----
+            document.querySelectorAll('.toggle-pass').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    var input = document.getElementById(button.getAttribute('data-target'));
+                    var show = input.type === 'password';
+                    input.type = show ? 'text' : 'password';
+                    button.setAttribute('aria-pressed', show ? 'true' : 'false');
+                    button.setAttribute('aria-label', show ? 'Ocultar contraseña' : 'Mostrar contraseña');
+                });
+            });
+
+            // ----- Enviar -----
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+                status.textContent = '';
+                status.className = 'form-status';
+
+                var firstInvalid = null;
+                Object.keys(fields).forEach(function (name) {
+                    if (!checkField(name) && !firstInvalid) firstInvalid = fields[name].input;
+                });
+
+                if (firstInvalid) {
+                    firstInvalid.focus();
+                    return;
+                }
+
+                // TODO (cuando exista el backend): enviar los datos al servidor, por ejemplo con
+                // fetch('/registro', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                //                      body: JSON.stringify({ fullname: ..., email: ..., phone: ..., password: ... }) })
+                status.className = 'form-status is-success';
+                status.textContent = '✓ Datos válidos. (Demostración: la cuenta real se creará cuando el proyecto tenga base de datos de usuarios.)';
+            });
+        })();
+    </script>
+
+</body>
+</html>

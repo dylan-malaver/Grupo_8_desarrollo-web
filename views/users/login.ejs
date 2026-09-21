@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<%- include('../partials/head', { title: 'Iniciar Sesión | Floristería Andrea', styles: ['/css/auth.css'] }) %>
+<body>
+
+    <%- include('../partials/header') %>
+
+    <main>
+
+        <!-- ===== Ruta de navegación ===== -->
+        <section class="auth-crumb">
+            <nav class="auth-breadcrumb" aria-label="Ruta de navegación">
+                <a href="/">Inicio</a> / <span aria-current="page">Iniciar sesión</span>
+            </nav>
+        </section>
+
+        <!-- ===== Login ===== -->
+        <section class="auth-section">
+            <div class="auth-card">
+
+                <div class="auth-media">
+                    <img src="/img/auth-tulipanes.jpg" alt="Tulipanes morados con gotas de agua">
+                </div>
+
+                <div class="auth-panel">
+                    <form id="login-form" method="POST" action="/login" novalidate>
+                        <p class="auth-eyebrow">Mi Cuenta</p>
+                        <h1 class="auth-title">Bienvenido de nuevo</h1>
+                        <p class="auth-lead">Inicia sesión para continuar con tu experiencia en Floristería Andrea</p>
+
+                        <div class="field">
+                            <label for="email">Correo electrónico</label>
+                            <input type="email" id="email" name="email" placeholder="Ingresa tu correo"
+                                   autocomplete="email" required aria-describedby="email-error">
+                            <small class="field-error" id="email-error"></small>
+                        </div>
+
+                        <div class="field">
+                            <label for="password">Contraseña</label>
+                            <div class="password-field">
+                                <input type="password" id="password" name="password" placeholder="Ingresa tu contraseña"
+                                       autocomplete="current-password" required aria-describedby="password-error">
+                                <button type="button" class="toggle-pass" data-target="password"
+                                        aria-label="Mostrar contraseña" aria-pressed="false">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/>
+                                        <circle cx="12" cy="12" r="3"/>
+                                        <line class="eye-slash" x1="3" y1="21" x2="21" y2="3"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <small class="field-error" id="password-error"></small>
+                        </div>
+
+                        <a href="#" class="link-red forgot-link">¿Olvidaste tu contraseña?</a>
+
+                        <button type="submit" class="btn-submit">Iniciar sesión</button>
+
+                        <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+
+                        <div class="auth-switch">
+                            <span>¿No tienes una cuenta?</span>
+                            <a href="/registro" class="link-red">Registrarse</a>
+                        </div>
+
+                        <p class="auth-note">Accede a tu cuenta para continuar con tus pedidos</p>
+                    </form>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <%- include('../partials/footer') %>
+
+    <script>
+        (function () {
+            var form = document.getElementById('login-form');
+            var status = document.getElementById('form-status');
+            var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            // ----- Reglas de cada campo (devuelven el mensaje de error, o '' si está bien) -----
+            var fields = {
+                email: {
+                    input: document.getElementById('email'),
+                    validate: function (value) {
+                        value = value.trim();
+                        if (!value) return '* El correo electrónico es obligatorio';
+                        if (!EMAIL_RE.test(value)) return '* Ingresa un correo válido, por ejemplo ejemplo@correo.com';
+                        return '';
+                    }
+                },
+                password: {
+                    input: document.getElementById('password'),
+                    validate: function (value) {
+                        if (!value) return '* La contraseña es obligatoria';
+                        return '';
+                    }
+                }
+            };
+
+            // Muestra u oculta el error de un campo. Devuelve true si el campo es válido.
+            function checkField(name) {
+                var field = fields[name];
+                var message = field.validate(field.input.value);
+                var wrapper = field.input.closest('.field');
+
+                document.getElementById(name + '-error').textContent = message;
+                wrapper.classList.toggle('has-error', message !== '');
+                field.input.setAttribute('aria-invalid', message !== '' ? 'true' : 'false');
+
+                return message === '';
+            }
+
+            Object.keys(fields).forEach(function (name) {
+                var input = fields[name].input;
+                // Al salir del campo se valida; mientras se corrige, el error desaparece apenas queda bien
+                input.addEventListener('blur', function () { checkField(name); });
+                input.addEventListener('input', function () {
+                    if (input.closest('.field').classList.contains('has-error')) checkField(name);
+                });
+            });
+
+            // ----- Ojito para mostrar u ocultar la contraseña -----
+            document.querySelectorAll('.toggle-pass').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    var input = document.getElementById(button.getAttribute('data-target'));
+                    var show = input.type === 'password';
+                    input.type = show ? 'text' : 'password';
+                    button.setAttribute('aria-pressed', show ? 'true' : 'false');
+                    button.setAttribute('aria-label', show ? 'Ocultar contraseña' : 'Mostrar contraseña');
+                });
+            });
+
+            // ----- Enviar -----
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+                status.textContent = '';
+                status.className = 'form-status';
+
+                var firstInvalid = null;
+                Object.keys(fields).forEach(function (name) {
+                    if (!checkField(name) && !firstInvalid) firstInvalid = fields[name].input;
+                });
+
+                if (firstInvalid) {
+                    firstInvalid.focus();
+                    return;
+                }
+
+                // TODO (cuando exista el backend): enviar los datos al servidor, por ejemplo con
+                // fetch('/login', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                //                   body: JSON.stringify({ email: ..., password: ... }) })
+                status.className = 'form-status is-success';
+                status.textContent = '✓ Datos válidos. (Demostración: el inicio de sesión real se activará cuando el proyecto tenga base de datos de usuarios.)';
+            });
+        })();
+    </script>
+
+</body>
+</html>

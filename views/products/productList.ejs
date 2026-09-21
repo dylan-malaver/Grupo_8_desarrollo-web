@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<%- include('../partials/head', { title: 'Productos | Floristería Andrea', styles: ['/css/product-list.css'] }) %>
+<body>
+
+    <%- include('../partials/header') %>
+
+    <main>
+
+        <!-- ===== Título ===== -->
+        <section class="cart-head">
+            <nav class="cart-breadcrumb" aria-label="Ruta de navegación">
+                <a href="/">Inicio</a> / <span aria-current="page">Productos</span>
+            </nav>
+            <h1 class="cart-title">
+                <%= current ? current.name : 'Todos los productos' %>
+            </h1>
+            <p class="cart-subtitle">Explora nuestro catálogo de flores y arreglos</p>
+        </section>
+
+        <!-- ===== Filtro por categorías ===== -->
+        <section class="category-filter">
+            <a href="/productos" class="<%= !current ? 'active' : '' %>">Todas</a>
+            <% categories.forEach(function (cat) { %>
+                <a href="/productos?categoria=<%= cat.slug %>" class="<%= current && current.slug === cat.slug ? 'active' : '' %>">
+                    <%= cat.name %>
+                </a>
+            <% }); %>
+        </section>
+
+        <!-- ===== Grilla de productos ===== -->
+        <section class="products">
+            <div class="product-grid">
+                <% if (products.length === 0) { %>
+                    <p>No hay productos en esta categoría todavía.</p>
+                <% } else { %>
+                    <% products.forEach(function (item) { %>
+                        <%- include('../partials/product-card', { product: item }) %>
+                    <% }); %>
+                <% } %>
+            </div>
+        </section>
+
+    </main>
+
+    <%- include('../partials/footer') %>
+
+</body>
+</html>

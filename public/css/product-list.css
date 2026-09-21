@@ -1,0 +1,117 @@
+/* =========================================================
+   Vista: Listado de productos
+   Se carga DESPUÉS de styles.css (reutiliza sus variables,
+   header, footer y tarjetas de producto).
+   También la carga el home para el botón "Ver todos los productos".
+   ========================================================= */
+
+/* ---------- Título y ruta de navegación ---------- */
+.list-head {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    text-align: center;
+}
+
+.list-breadcrumb {
+    font-size: 0.8rem;
+    margin-bottom: 28px;
+}
+
+.list-breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+.list-title {
+    font-size: 2.4rem;
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 12px;
+}
+
+.list-subtitle {
+    max-width: 560px;
+    margin: 0 auto 28px;
+    font-size: 1rem;
+}
+
+/* ---------- Filtros por categoría ---------- */
+.category-filter {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.chip {
+    display: inline-block;
+    padding: 9px 18px;
+    background-color: var(--white);
+    color: var(--text);
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    transition: filter 0.15s ease;
+}
+
+.chip:hover {
+    filter: brightness(0.94);
+}
+
+.chip.is-active {
+    background-color: var(--dark-green);
+    color: var(--white);
+}
+
+/* ---------- Resultados ---------- */
+.list-results {
+    padding-top: 28px;
+}
+
+.list-count {
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 0.85rem;
+}
+
+.list-results .product-grid {
+    margin-top: 0;
+}
+
+/* Categoría sin productos */
+.list-empty {
+    max-width: 520px;
+    margin: 12px auto 0;
+    padding: 40px 28px;
+    background-color: var(--white);
+    border-radius: 24px;
+    text-align: center;
+}
+
+.list-empty-title {
+    margin-bottom: 8px;
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.list-empty .btn-rose {
+    margin-top: 20px;
+    padding: 12px 22px;
+    font-size: 1rem;
+}
+
+/* ---------- Botón "Ver todos los productos" (home) ---------- */
+.section-more {
+    margin-top: 32px;
+    text-align: center;
+}
+
+.section-more .btn-rose {
+    padding: 12px 24px;
+    font-size: 1rem;
+}
+
+@media (max-width: 600px) {
+    .list-title {
+        font-size: 2rem;
+    }
+}

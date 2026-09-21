@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<%- include('partials/head', { title: 'Floristería Andrea | San Gil, Santander', styles: ['/css/product-list.css'] }) %>
+<body>
+
+    <%- include('partials/header') %>
+
+    <main>
+
+        <!-- ===== Hero ===== -->
+        <section class="hero" id="inicio">
+            <div class="hero-text">
+                <h2>Flores que convierten momentos especiales en recuerdos inolvidables🌷</h2>
+                <p class="hero-desc">
+                    Encuentra los detalles perfectos en Floristería Andrea y sorprende a esa persona especial.
+                    Explora nuestras opciones y encuentra el detalle adecuado para cada ocasión.
+                </p>
+                <p class="hero-address">San Gil, Santander | Cra. 8 No. 12-17, Edificio Santa Cruz, Local 1</p>
+                <div class="hero-actions">
+                    <a href="#productos" class="btn btn-coral">Ver productos</a>
+                    <a href="https://wa.me/573015821863" class="btn btn-whatsapp" target="_blank" rel="noopener">Pedir por WhatsApp</a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="/img/hero.jpg" alt="Flores frescas de Floristería Andrea">
+            </div>
+        </section>
+
+        <!-- ===== Beneficios ===== -->
+        <section class="features" id="nosotros">
+            <article class="feature-card">
+                <span class="feature-icon" aria-hidden="true">🎨</span>
+                <h3>Diseños florales</h3>
+                <p>Detalles pensados para diferentes momentos y ocasiones.</p>
+            </article>
+            <article class="feature-card">
+                <span class="feature-icon" aria-hidden="true">🎁</span>
+                <h3>Para cada ocasión</h3>
+                <p>Flores y detalles para sorprender, celebrar y expresar sentimientos.</p>
+            </article>
+            <article class="feature-card">
+                <span class="feature-icon" aria-hidden="true">🤝</span>
+                <h3>Atención personalizada</h3>
+                <p>Un espacio pensado para facilitar la elección del detalle perfecto.</p>
+            </article>
+            <article class="feature-card">
+                <span class="feature-icon" aria-hidden="true">🚚</span>
+                <h3>Entrega a domicilio</h3>
+                <p>Servicio de entrega a domicilio para facilitar tus pedidos.</p>
+            </article>
+        </section>
+
+        <!-- ===== Categorías ===== -->
+        <section class="categories" id="categorias">
+            <h2 class="section-title">Encuentra el detalle perfecto</h2>
+            <p class="section-subtitle">Explora nuestras principales categorías de arreglos y flores para cada momento especial.</p>
+
+            <div class="category-grid">
+                <article class="category-card">
+                    <img src="/img/cat-ramos.jpg" alt="Ramo de lirios rosados con lazo">
+                    <div class="category-body">
+                        <h3>🥀Ramos de flores</h3>
+                        <p>Diseños tradicionales y modernos seleccionados para expresar tus emociones más sinceras.</p>
+                        <a href="/productos?categoria=ramos-de-flores" class="btn-salmon">Explorar categorías</a>
+                    </div>
+                </article>
+
+                <article class="category-card">
+                    <img src="/img/cat-arreglos.jpg" alt="Arreglo floral en caja blanca con lazo rojo">
+                    <div class="category-body">
+                        <h3>💐Arreglos florales</h3>
+                        <p>Composiciones florales armónicas preparadas en bases especiales para destacar en cualquier lugar.</p>
+                        <a href="/productos?categoria=arreglos-florales" class="btn-salmon">Explorar categorías</a>
+                    </div>
+                </article>
+
+                <article class="category-card">
+                    <img src="/img/cat-romanticos.jpg" alt="Detalle romántico con rosas y corazón">
+                    <div class="category-body">
+                        <h3>❤ Detalles románticos</h3>
+                        <p>La combinación ideal para enamorar y crear instantes mágicos junto a esa persona especial.</p>
+                        <a href="/productos?categoria=detalles-romanticos" class="btn-salmon">Explorar categorías</a>
+                    </div>
+                </article>
+
+                <article class="category-card">
+                    <img src="/img/cat-cumpleanos.jpg" alt="Globos de colores para cumpleaños">
+                    <div class="category-body">
+                        <h3>🎂 Cumpleaños</h3>
+                        <p>Colores vivos y flores frescas para desear el mejor de los cumpleaños con alegría.</p>
+                        <a href="/productos?categoria=cumpleanos" class="btn-salmon">Explorar categorías</a>
+                    </div>
+                </article>
+
+                <article class="category-card">
+                    <img src="/img/cat-aniversarios.jpg" alt="Ramo de rosas blancas">
+                    <div class="category-body">
+                        <h3>💍Aniversarios</h3>
+                        <p>Celebra cada año de amor y compañía con un arreglo memorable y lleno de significado.</p>
+                        <a href="/productos?categoria=aniversarios" class="btn-salmon">Explorar categorías</a>
+                    </div>
+                </article>
+
+                <article class="category-card">
+                    <img src="/img/cat-especiales.jpg" alt="Rosas arcoíris de colores">
+                    <div class="category-body">
+                        <h3>🌸Ocasiones especiales</h3>
+                        <p>Grados, agradecimientos o simplemente un bonito gesto espontáneo para alegrar el día.</p>
+                        <a href="/productos?categoria=ocasiones-especiales" class="btn-salmon">Explorar categorías</a>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- ===== Productos destacados ===== -->
+        <section class="products" id="productos">
+            <h2 class="section-title">Productos Destacados</h2>
+
+            <div class="product-grid">
+                <% featured.forEach(function (product) { %>
+                    <%- include('partials/product-card', { product: product }) %>
+                <% }); %>
+            </div>
+
+            <div class="section-more">
+                <a href="/productos" class="btn-rose">Ver todos los productos</a>
+            </div>
+        </section>
+
+        <!-- ===== Banner CTA ===== -->
+        <section class="cta-banner">
+            <div class="cta-text">
+                <h2>¿Quieres sorprender a alguien especial?</h2>
+                <p>Encuentra un detalle floral para convertir cualquier ocasión en un momento inolvidable. Realiza tu pedido en línea de forma sencilla</p>
+                <div class="cta-actions">
+                    <a href="#productos" class="btn-rose">Ver productos</a>
+                    <a href="#ubicacion" class="btn-rose">Contactar</a>
+                </div>
+            </div>
+            <div class="cta-image">
+                <img src="/img/banner-tulipanes.jpg" alt="Tulipanes rosados en un florero">
+            </div>
+        </section>
+
+        <!-- ===== Opiniones ===== -->
+        <section class="reviews" id="opiniones">
+            <h2 class="section-title">Opiniones de nuestros clientes</h2>
+
+            <div class="rating-summary">
+                <p class="rating-number">2.5</p>
+                <p class="rating-stars" aria-label="2.5 de 5 estrellas">⭐⭐✨⚪⚪</p>
+                <p class="rating-text">⭐ 2.5 / 5 - 11 opiniones</p>
+            </div>
+
+            <div class="review-grid">
+                <article class="review-card">
+                    <h3>Maya González Zea "Rulitos"</h3>
+                    <p class="review-meta">Local Guide · 26 opiniones · 29 fotos</p>
+                    <p class="review-stars">⭐ 1 / 5</p>
+                    <blockquote>
+                        "Mal servicio, se solicitaron unas flores, se pagó una parte por adelantado y pasados los días para la fecha de entrega; dijeron que no las tenían, además se solicitó la devolución del dinero y han buscado pretextos para devolverlo, el personal fué grosero."
+                    </blockquote>
+                </article>
+
+                <article class="review-card">
+                    <h3>Brenda lancheros</h3>
+                    <p class="review-meta">7 opiniones</p>
+                    <p class="review-stars">⭐ 1 / 5</p>
+                    <blockquote>
+                        "No recomiendo esta florería pésimo servicio hice pedido de flores consigne para mandarlas a traer y no llegaron y ahora que pido la devolución del dinero me dice que no lo devuelven y el señor fue muy grosero a tratarlo feo tras que uno les da confianza, no tienen unos buenos modales peor florería en San Gil."
+                    </blockquote>
+                </article>
+
+                <article class="review-card">
+                    <h3>July Monsalve</h3>
+                    <p class="review-meta">1 opinión</p>
+                    <p class="review-stars">⭐⭐⭐⭐⭐ 5 / 5</p>
+                    <blockquote>
+                        "Muy cumplidos y la atención de lo mejor."
+                    </blockquote>
+                </article>
+            </div>
+        </section>
+
+        <!-- ===== Ubicación y horario ===== -->
+        <section class="location" id="ubicacion">
+            <h2 class="section-title">📍Visítanos</h2>
+
+            <div class="location-grid">
+                <article class="info-card">
+                    <h3>Floristería Andrea</h3>
+                    <p>Cra. 8 No. 12-17, Edificio Santa Cruz, Cra. 8 # Local 1</p>
+                    <p>San Gil, Santander, Colombia</p>
+                    <p><strong>Código Plus : HV48+7X San Gil, Santander</strong></p>
+                    <a class="btn-white" target="_blank" rel="noopener"
+                       href="https://www.google.com/maps/search/?api=1&query=Cra.+8+No.+12-17+San+Gil+Santander">📍Cómo llegar</a>
+                </article>
+
+                <article class="info-card">
+                    <h3>🕒 Horario de atención</h3>
+                    <p><strong>🔴Actualmente: Cerrado</strong></p>
+                    <p>Próxima apertura indicada: 7:00 a. m.</p>
+                    <p>Para consultas de disponibilidad fuera de horario, puedes dejarnos un mensaje por WhatsApp</p>
+                    <a class="btn-pale" href="https://wa.me/573015821863" target="_blank" rel="noopener">Contáctanos</a>
+                </article>
+            </div>
+
+            <h2 class="closing-title">Un detalle puede decirlo todo</h2>
+        </section>
+
+    </main>
+
+    <%- include('partials/footer') %>
+
+</body>
+</html>

@@ -1,0 +1,27 @@
+<%#
+    PARTIAL: cabecera (head) compartida por todas las páginas.
+
+    Cómo se usa desde cualquier vista (dentro de una etiqueta EJS de salida):
+      include('partials/head', {
+          title: 'Tu Carrito | Floristería Andrea',   // título de la pestaña
+          styles: ['/css/cart.css']                    // hojas de estilo extra (opcional)
+      })
+%>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= locals.title || 'Floristería Andrea | San Gil, Santander' %></title>
+
+    <!-- Fuente Inter (la misma del diseño en Figma) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Estilos generales (header, footer, botones, tarjetas) -->
+    <link rel="stylesheet" href="/css/styles.css">
+
+    <!-- Estilos propios de cada página, si los hay -->
+    <% (locals.styles || []).forEach(function (href) { %>
+    <link rel="stylesheet" href="<%= href %>">
+    <% }); %>
+</head>

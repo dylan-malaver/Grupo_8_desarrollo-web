@@ -1,0 +1,417 @@
+/* =========================================================
+   Vistas: Iniciar sesión y Registro
+   Se carga DESPUÉS de styles.css (reutiliza sus variables,
+   header y footer). Lo usan login.ejs y register.ejs.
+   ========================================================= */
+
+:root {
+    --input-bg: #adadad;        /* fondo de los campos */
+    --input-hint: #4a4a4a;      /* texto de ayuda (placeholder) */
+    --red-text: #c00000;        /* rojo de los enlaces sobre gris (más legible) */
+    --error: #b00000;           /* mensajes de error */
+}
+
+/* ---------- Ruta de navegación ---------- */
+.auth-crumb {
+    padding-top: 8px;
+    padding-bottom: 20px;
+    text-align: center;
+}
+
+.auth-breadcrumb {
+    font-size: 0.8rem;
+}
+
+.auth-breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+/* ---------- Contenedor general ---------- */
+.auth-section {
+    padding-top: 12px;
+    padding-bottom: 72px;
+}
+
+/* Login: imagen + formulario dentro de una sola tarjeta */
+.auth-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    max-width: 960px;
+    margin: 0 auto;
+    background-color: var(--gray);
+    border: 1px solid var(--text);
+    border-radius: 24px;
+    overflow: hidden;
+}
+
+/* Registro: columna izquierda + tarjeta del formulario */
+.auth-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: stretch;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.auth-side {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--gray);
+    border: 1px solid var(--text);
+    border-radius: 24px;
+    overflow: hidden;
+}
+
+.auth-side .auth-media {
+    flex: 1;
+    min-height: 300px;
+}
+
+.auth-side-text {
+    padding: 36px 28px 40px;
+    text-align: center;
+}
+
+.auth-side-text h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 22px;
+}
+
+.auth-side-text p {
+    font-size: 0.95rem;
+}
+
+/* Imagen: rellena todo el espacio disponible */
+.auth-media {
+    position: relative;
+    min-height: 420px;
+    background-color: #d8c1d8;
+}
+
+.auth-media img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* ---------- Panel del formulario ---------- */
+.auth-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 40px 44px;
+    background-color: var(--gray);
+    text-align: center;
+}
+
+.auth-panel--card {
+    border: 1px solid var(--text);
+    border-radius: 24px;
+}
+
+.auth-eyebrow {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--red-text);
+    margin-bottom: 8px;
+}
+
+.auth-eyebrow.is-caps {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.auth-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 16px;
+}
+
+.auth-lead {
+    font-size: 0.85rem;
+    margin-bottom: 26px;
+}
+
+/* ---------- Campos ---------- */
+.field {
+    margin-bottom: 18px;
+}
+
+.field label {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.field input[type="text"],
+.field input[type="email"],
+.field input[type="tel"],
+.field input[type="password"] {
+    width: 100%;
+    height: 46px;
+    padding: 0 16px;
+    background-color: var(--input-bg);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    color: var(--text);
+}
+
+.field input::placeholder {
+    color: var(--input-hint);
+}
+
+.field input:focus-visible {
+    outline: 3px solid var(--dark-green);
+    outline-offset: 2px;
+    background-color: #b8b8b8;
+}
+
+/* Campo de contraseña con ojito */
+.password-field {
+    position: relative;
+}
+
+.password-field input {
+    padding-right: 52px;
+}
+
+.toggle-pass {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    background: none;
+    border: none;
+    border-radius: 8px;
+    color: var(--text);
+    cursor: pointer;
+}
+
+.toggle-pass:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.toggle-pass svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* La raya aparece cuando la contraseña está visible */
+.toggle-pass .eye-slash {
+    display: none;
+}
+
+.toggle-pass[aria-pressed="true"] .eye-slash {
+    display: block;
+}
+
+/* ---------- Errores ---------- */
+.field-error {
+    display: block;
+    margin-top: 6px;
+    padding-left: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--error);
+    text-align: left;
+}
+
+.field-error:empty {
+    display: none;
+}
+
+.field.has-error input[type="text"],
+.field.has-error input[type="email"],
+.field.has-error input[type="tel"],
+.field.has-error input[type="password"] {
+    border-color: var(--red);
+}
+
+/* ---------- Casilla de términos ---------- */
+.field-check {
+    text-align: left;
+}
+
+.check-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.75rem;
+    line-height: 1.4;
+}
+
+.check-row label {
+    display: block;
+    margin: 0;
+    font-size: 0.75rem;
+    font-weight: 400;
+    cursor: pointer;
+}
+
+.check-row input[type="checkbox"] {
+    flex: none;
+    appearance: none;
+    -webkit-appearance: none;
+    width: 24px;
+    height: 24px;
+    margin: 0;
+    background-color: var(--white);
+    border: 2px solid var(--text);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.check-row input[type="checkbox"]:checked {
+    background-color: var(--text);
+    box-shadow: inset 0 0 0 4px var(--white);
+}
+
+.check-row input[type="checkbox"]:focus-visible {
+    outline: 3px solid var(--dark-green);
+    outline-offset: 2px;
+}
+
+.field-check.has-error .check-row input[type="checkbox"] {
+    border-color: var(--red);
+}
+
+/* ---------- Enlaces y botón ---------- */
+.link-red {
+    color: var(--red-text);
+    font-weight: 700;
+}
+
+.link-red:hover {
+    text-decoration: underline;
+}
+
+.forgot-link {
+    display: inline-block;
+    margin: 2px 0 22px;
+    font-size: 0.85rem;
+}
+
+.btn-submit {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    background-color: var(--coral);
+    color: var(--white);
+    border: none;
+    border-radius: 14px;
+    font-family: inherit;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: filter 0.15s ease, transform 0.15s ease;
+}
+
+.btn-submit:hover {
+    filter: brightness(0.95);
+    transform: translateY(-1px);
+}
+
+.btn-submit:focus-visible {
+    outline: 3px solid var(--dark-green);
+    outline-offset: 3px;
+}
+
+.form-status {
+    margin-top: 14px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: left;
+}
+
+.form-status:empty {
+    display: none;
+}
+
+.form-status.is-success {
+    background-color: #d3e8d4;
+    color: #14501a;
+}
+
+.auth-switch {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-top: 22px;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.auth-note {
+    margin-top: 18px;
+    font-size: 0.7rem;
+}
+
+/* Nota en cajita (registro) */
+.auth-note.is-pill {
+    padding: 8px 14px;
+    background-color: #c4c4c4;
+    border-radius: 12px;
+    text-align: left;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media (max-width: 800px) {
+    .auth-card,
+    .auth-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .auth-card .auth-media {
+        min-height: 200px;
+    }
+
+    .auth-panel {
+        padding: 32px 24px;
+    }
+
+    /* En el registro, el formulario va primero en el celular */
+    .auth-layout .auth-panel--card {
+        order: -1;
+    }
+
+    .auth-side .auth-media {
+        min-height: 220px;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-switch {
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .auth-side-text h2 {
+        font-size: 1.6rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .btn-submit {
+        transition: none;
+    }
+}

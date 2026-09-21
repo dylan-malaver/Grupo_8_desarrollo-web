@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="es">
+<%- include('../partials/head', { title: 'Tu Carrito | Floristería Andrea', styles: ['/css/cart.css'] }) %>
+<body>
+
+    <%- include('../partials/header') %>
+
+    <!-- El catálogo viaja en este atributo para que el JavaScript de abajo quede sin código EJS -->
+    <main id="cart-app" data-catalog="<%= JSON.stringify(catalog) %>">
+
+        <!-- ===== Título ===== -->
+        <section class="cart-head">
+            <nav class="cart-breadcrumb" aria-label="Ruta de navegación">
+                <a href="/">Inicio</a> / <span aria-current="page">Carrito de Compras</span>
+            </nav>
+            <h1 class="cart-title">Tu Carrito</h1>
+            <p class="cart-subtitle">Revisa tus productos antes de seguir con el pedido</p>
+        </section>
+
+        <!-- ===== Productos del carrito + resumen ===== -->
+        <section class="cart-layout">
+
+            <div class="cart-main">
+                <div class="cart-box">
+                    <!-- Aquí el JavaScript dibuja los productos del carrito -->
+                    <div id="cart-list"></div>
+
+                    <div class="cart-box-footer" id="cart-footer">
+                        <a href="/productos" class="btn-keep">↩️ Seguir Comprando</a>
+                    </div>
+                </div>
+
+                <div class="delivery-note">
+                    <p class="delivery-title">🚚 Entrega a domicilio</p>
+                    <p>Floristería Andrea ofrece servicio de entrega a domicilio</p>
+                </div>
+            </div>
+
+            <aside class="order-summary" aria-label="Resumen del pedido">
+                <h2>Resumen del pedido</h2>
+
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span id="summary-subtotal">$ 0 COP</span>
+                </div>
+                <div class="summary-row">
+                    <span>Entrega a domicilio</span>
+                    <span>Por confirmar</span>
+                </div>
+
+                <hr class="summary-divider">
+
+                <div class="summary-total">
+                    <span>Total</span>
+                    <span class="amount" id="summary-total">$ 0 COP</span>
+                </div>
+                <p class="summary-note">El costo de entrega se confirmará según la ubicación</p>
+
+                <a href="#" id="checkout-btn" class="btn-checkout" target="_blank" rel="noopener" aria-disabled="true">Continuar con el pedido</a>
+
+                <hr class="summary-divider">
+
+                <div class="summary-help">
+                    <p>¿Necesitas ayuda con tu pedido?</p>
+                    <p><a class="help-link" href="https://wa.me/573015821863" target="_blank" rel="noopener">Contactar</a></p>
+                    <p><a class="help-link" href="tel:+573015821863">301 5821863</a></p>
+                </div>
+            </aside>
+
+        </section>
+
+        <!-- ===== También te puede interesar ===== -->
+        <section class="products cart-related" id="cart-related">
+            <h2 class="section-title">También te puede interesar</h2>
+            <p class="section-subtitle">Explora otras opciones florales en el catálogo</p>
+
+            <div class="product-grid">
+                <% products.forEach(function (item) { %>
+                    <%- include('../partials/product-card', { product: item, compact: true }) %>
+                <% }); %>
+            </div>
+        </section>
+
+    </main>
+
+    <%- include('../partials/footer') %>
+
+    <script>
+        (function () {
+            // ---------- Datos ----------
+            var CATALOG = JSON.parse(document.getElementById('cart-app').getAttribute('data-catalog'));
+            var STORAGE_KEY = 'floristeria_carrito';
+            var WHATSAPP = '573015821863';
+            var MIN_QTY = 1;
+            var MAX_QTY = 10;
+            var MAX_RELATED = 3;
+
+            var byId = {};
+            CATALOG.forEach(function (p) { byId[p.id] = p; });
+
+            // ---------- Utilidades ----------
+            function formatPrice(value) {
+                return '$ ' + String(value).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' COP';
+            }
+
+            function clamp(n) {
+                n = parseInt(n, 10);
+                if (isNaN(n) || n < MIN_QTY) return MIN_QTY;
+                return n > MAX_QTY ? MAX_QTY : n;
+            }
+
+            function el(tag, className, text) {
+                var node = document.createElement(tag);
+                if (className) node.className = className;
+                if (text !== undefined) node.textContent = text;
+                return node;
+            }
+
+            // ---------- Carrito guardado en el navegador ----------
+            function loadCart() {
+                try {
+                    var saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+                    if (!Array.isArray(saved)) return [];
+                    return saved
+                        .filter(function (i) { return i && byId[i.id]; })
+                        .map(function (i) { return { id: i.id, qty: clamp(i.qty) }; });
+                } catch (e) {
+                    return [];
+                }
+            }
+
+            function saveCart() {
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(cart));
+                } catch (e) { /* si el navegador no permite guardar, el carrito funciona solo en esta visita */ }
+            }
+
+            var cart = loadCart();
+
+            // Si llegamos desde "Agregar al carrito": /carrito?producto=ID&quantity=N
+            (function addFromUrl() {
+                var params = new URLSearchParams(window.location.search);
+                var id = params.get('producto');
+
+                if (id && byId[id]) {
+                    var qty = clamp(params.get('quantity') || 1);
+                    var found = cart.filter(function (i) { return i.id === id; })[0];
+                    if (found) {
+                        found.qty = clamp(found.qty + qty);
+                    } else {
+                        cart.push({ id: id, qty: qty });
+                    }
+                    saveCart();
+                }
+
+                // Limpia la dirección para que al recargar no se sume otra vez
+                if (params.has('producto') || params.has('quantity')) {
+                    history.replaceState(null, '', window.location.pathname);
+                }
+            })();
+
+            function changeQty(id, delta) {
+                cart.forEach(function (i) {
+                    if (i.id === id) i.qty = clamp(i.qty + delta);
+                });
+                saveCart();
+                render();
+            }
+
+            function removeItem(id) {
+                cart = cart.filter(function (i) { return i.id !== id; });
+                saveCart();
+                render();
+            }
+
+            // ---------- Dibujar un producto del carrito ----------
+            function buildItem(item) {
+                var p = byId[item.id];
+
+                var article = el('article', 'cart-item');
+
+                var img = el('img', 'cart-item-img');
+                img.src = '/img/' + p.image;
+                img.alt = p.alt;
+
+                var info = el('div', 'cart-item-info');
+                info.appendChild(el('h3', 'cart-item-name', p.name));
+                info.appendChild(el('p', 'cart-item-category', p.category));
+                info.appendChild(el('p', 'cart-item-price', formatPrice(p.price)));
+
+                if (item.qty > 1) {
+                    info.appendChild(el('p', 'cart-item-subtotal',
+                        item.qty + ' unidades: ' + formatPrice(p.price * item.qty)));
+                }
+
+                info.appendChild(el('p', 'cart-item-qty-label', 'Cantidad'));
+
+                var qty = el('div', 'cart-qty');
+
+                var minus = el('button', null, '-');
+                minus.type = 'button';
+                minus.setAttribute('aria-label', 'Disminuir cantidad de ' + p.name);
+                minus.disabled = item.qty <= MIN_QTY;
+                minus.addEventListener('click', function () { changeQty(item.id, -1); });
+
+                var value = el('span', 'cart-qty-value', String(item.qty));
+
+                var plus = el('button', null, '+');
+                plus.type = 'button';
+                plus.setAttribute('aria-label', 'Aumentar cantidad de ' + p.name);
+                plus.disabled = item.qty >= MAX_QTY;
+                plus.addEventListener('click', function () { changeQty(item.id, 1); });
+
+                qty.appendChild(minus);
+                qty.appendChild(value);
+                qty.appendChild(plus);
+                info.appendChild(qty);
+
+                var remove = el('button', 'cart-remove', 'Eliminar');
+                remove.type = 'button';
+                remove.setAttribute('aria-label', 'Eliminar ' + p.name + ' del carrito');
+                remove.addEventListener('click', function () { removeItem(item.id); });
+                info.appendChild(remove);
+
+                article.appendChild(img);
+                article.appendChild(info);
+                return article;
+            }
+
+            // ---------- Carrito vacío ----------
+            function buildEmpty() {
+                var box = el('div', 'cart-empty');
+                box.appendChild(el('p', 'cart-empty-title', 'Tu carrito está vacío'));
+                box.appendChild(el('p', 'cart-empty-text', 'Agrega un detalle floral para verlo aquí.'));
+                var link = el('a', 'btn-rose', 'Ver productos');
+                link.href = '/productos';
+                box.appendChild(link);
+                return box;
+            }
+
+            // ---------- Mensaje de WhatsApp con el pedido ----------
+            function buildWhatsappUrl(total) {
+                var lines = cart.map(function (i) {
+                    var p = byId[i.id];
+                    return '- ' + i.qty + ' x ' + p.name + ' (' + formatPrice(p.price) + ')';
+                });
+
+                var message =
+                    'Hola, quiero hacer este pedido en Floristería Andrea:\n\n' +
+                    lines.join('\n') +
+                    '\n\nTotal de productos: ' + formatPrice(total) + ' (sin costo de envío)' +
+                    '\n\n¿Me confirman disponibilidad y el costo de entrega?';
+
+                return 'https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent(message);
+            }
+
+            // ---------- Pintar todo ----------
+            function render() {
+                var list = document.getElementById('cart-list');
+                var footer = document.getElementById('cart-footer');
+                var checkout = document.getElementById('checkout-btn');
+
+                list.innerHTML = '';
+
+                var total = 0;
+                cart.forEach(function (i) { total += byId[i.id].price * i.qty; });
+
+                if (cart.length === 0) {
+                    list.appendChild(buildEmpty());
+                    footer.hidden = true;
+                    checkout.setAttribute('aria-disabled', 'true');
+                    checkout.setAttribute('href', '#');
+                } else {
+                    cart.forEach(function (item) { list.appendChild(buildItem(item)); });
+                    footer.hidden = false;
+                    checkout.setAttribute('aria-disabled', 'false');
+                    checkout.setAttribute('href', buildWhatsappUrl(total));
+                }
+
+                document.getElementById('summary-subtotal').textContent = formatPrice(total);
+                document.getElementById('summary-total').textContent = formatPrice(total);
+
+                // "También te puede interesar": oculta lo que ya está en el carrito y muestra máximo 3
+                var inCart = {};
+                cart.forEach(function (i) { inCart[i.id] = true; });
+
+                var shown = 0;
+                document.querySelectorAll('#cart-related .product-card').forEach(function (card) {
+                    var hide = inCart[card.getAttribute('data-id')] || shown >= MAX_RELATED;
+                    card.hidden = !!hide;
+                    if (!hide) shown++;
+                });
+            }
+
+            render();
+        })();
+    </script>
+
+</body>
+</html>

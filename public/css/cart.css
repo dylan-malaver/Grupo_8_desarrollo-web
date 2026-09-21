@@ -1,0 +1,365 @@
+/* =========================================================
+   Vista: Carrito de compras
+   Se carga DESPUÉS de styles.css (reutiliza sus variables,
+   header, footer y tarjetas de producto)
+   ========================================================= */
+
+/* ---------- Título ---------- */
+.cart-head {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    text-align: center;
+}
+
+.cart-breadcrumb {
+    font-size: 0.8rem;
+    margin-bottom: 28px;
+}
+
+.cart-breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+.cart-title {
+    font-size: 2.4rem;
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 14px;
+}
+
+.cart-subtitle {
+    font-size: 1.05rem;
+}
+
+/* ---------- Distribución: productos + resumen ---------- */
+.cart-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+    gap: 32px;
+    align-items: start;
+    padding-top: 32px;
+    padding-bottom: 48px;
+}
+
+/* ---------- Caja de productos ---------- */
+.cart-box {
+    background-color: var(--gray);
+    border: 1px solid var(--text);
+    border-radius: 24px;
+    overflow: hidden;
+}
+
+.cart-item {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    align-items: center;
+    gap: 28px;
+    padding: 28px 32px;
+}
+
+.cart-item + .cart-item {
+    border-top: 1px solid rgba(17, 17, 17, 0.35);
+}
+
+.cart-item-img {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border-radius: 16px;
+    background-color: #f3eaea;
+}
+
+.cart-item-info {
+    text-align: center;
+}
+
+.cart-item-name {
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1.25;
+    margin-bottom: 12px;
+}
+
+.cart-item-category {
+    font-size: 0.8rem;
+    margin-bottom: 20px;
+}
+
+.cart-item-price {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--red);
+    margin-bottom: 6px;
+}
+
+.cart-item-subtotal {
+    font-size: 0.8rem;
+    margin-bottom: 6px;
+}
+
+.cart-item-qty-label {
+    font-weight: 700;
+    margin: 14px 0 10px;
+}
+
+/* Selector de cantidad  - 1 + */
+.cart-qty {
+    display: inline-flex;
+    align-items: stretch;
+    border: 2px solid var(--text);
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.cart-qty button,
+.cart-qty-value {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 44px;
+    background-color: var(--gray);
+    border: none;
+    font-family: inherit;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.cart-qty button {
+    cursor: pointer;
+}
+
+.cart-qty button:hover:not(:disabled) {
+    background-color: #c9c9c9;
+}
+
+.cart-qty button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.cart-qty-value {
+    border-left: 1px solid var(--text);
+    border-right: 1px solid var(--text);
+}
+
+.cart-remove {
+    display: block;
+    margin: 14px auto 0;
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: 0.8rem;
+    color: var(--text);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.cart-remove:hover {
+    color: var(--red);
+}
+
+/* Pie de la caja: Seguir comprando */
+.cart-box-footer {
+    border-top: 1px solid var(--text);
+    padding: 18px;
+    text-align: center;
+}
+
+.btn-keep {
+    display: inline-block;
+    background-color: #bdbdbd;
+    color: var(--text);
+    font-weight: 700;
+    font-size: 1.05rem;
+    padding: 12px 22px;
+    border-radius: 12px;
+    transition: filter 0.15s ease;
+}
+
+.btn-keep:hover {
+    filter: brightness(0.94);
+}
+
+/* Carrito vacío */
+.cart-empty {
+    padding: 48px 24px;
+    text-align: center;
+}
+
+.cart-empty-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.cart-empty-text {
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+}
+
+.cart-empty .btn-rose {
+    padding: 12px 22px;
+    font-size: 1rem;
+}
+
+/* ---------- Nota de entrega ---------- */
+.delivery-note {
+    max-width: 420px;
+    margin-top: 32px;
+    padding: 14px 24px;
+    background-color: var(--gray);
+    border: 1px solid var(--text);
+    border-radius: 20px;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.delivery-title {
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+/* ---------- Resumen del pedido ---------- */
+.order-summary {
+    background-color: var(--gray);
+    border: 1px solid var(--text);
+    border-radius: 24px;
+    padding: 24px 28px 28px;
+}
+
+.order-summary h2 {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 26px;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 0.85rem;
+    margin-bottom: 10px;
+}
+
+.summary-divider {
+    border: 0;
+    border-top: 1px solid var(--text);
+    margin: 18px 0;
+}
+
+.summary-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.summary-total .amount {
+    color: var(--red);
+}
+
+.summary-note {
+    font-size: 0.7rem;
+    margin: 6px 0 18px;
+}
+
+.btn-checkout {
+    display: block;
+    width: 100%;
+    background-color: var(--coral);
+    color: var(--white);
+    font-weight: 700;
+    font-size: 1.05rem;
+    text-align: center;
+    padding: 14px;
+    border-radius: 14px;
+    transition: filter 0.15s ease;
+}
+
+.btn-checkout:hover {
+    filter: brightness(0.95);
+}
+
+/* Sin productos, el botón queda apagado */
+.btn-checkout[aria-disabled="true"] {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.summary-help {
+    text-align: center;
+    font-size: 0.85rem;
+}
+
+.summary-help p {
+    margin-bottom: 10px;
+}
+
+.summary-help p:last-child {
+    margin-bottom: 0;
+}
+
+.help-link:hover {
+    text-decoration: underline;
+}
+
+/* ---------- También te puede interesar (3 tarjetas) ---------- */
+.cart-related {
+    padding-top: 24px;
+}
+
+.cart-related .product-grid {
+    grid-template-columns: repeat(3, 1fr);
+    max-width: 860px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Necesario para poder ocultar tarjetas con el atributo hidden */
+.product-card[hidden] {
+    display: none;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media (max-width: 900px) {
+    .cart-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .delivery-note {
+        max-width: none;
+    }
+
+    .cart-related .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .cart-title {
+        font-size: 2rem;
+    }
+
+    .cart-item {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 24px 20px;
+    }
+
+    .cart-item-img {
+        max-width: 220px;
+        margin: 0 auto;
+    }
+
+    .cart-related .product-grid {
+        grid-template-columns: 1fr;
+    }
+}
