@@ -24,9 +24,15 @@
 
                 <div class="auth-panel">
                     <form id="login-form" method="POST" action="/login" novalidate>
+                        <input type="hidden" name="redirectTo" value="<%= redirectTo %>">
+
                         <p class="auth-eyebrow">Mi Cuenta</p>
                         <h1 class="auth-title">Bienvenido de nuevo</h1>
                         <p class="auth-lead">Inicia sesión para continuar con tu experiencia en Floristería Andrea</p>
+
+                        <% if (error) { %>
+                            <p class="form-status is-error" role="alert"><%= error %></p>
+                        <% } %>
 
                         <div class="field">
                             <label for="email">Correo electrónico</label>
@@ -134,8 +140,10 @@
             });
 
             // ----- Enviar -----
+            // Solo se valida el formato de los datos aquí. Quién es y si puede entrar como
+            // administrador lo decide el servidor (ver controllers/userController.js), así que
+            // si el formato está bien dejamos que el formulario se envíe de forma normal.
             form.addEventListener('submit', function (event) {
-                event.preventDefault();
                 status.textContent = '';
                 status.className = 'form-status';
 
@@ -145,15 +153,11 @@
                 });
 
                 if (firstInvalid) {
+                    event.preventDefault();
                     firstInvalid.focus();
-                    return;
                 }
-
-                // TODO (cuando exista el backend): enviar los datos al servidor, por ejemplo con
-                // fetch('/login', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-                //                   body: JSON.stringify({ email: ..., password: ... }) })
-                status.className = 'form-status is-success';
-                status.textContent = '✓ Datos válidos. (Demostración: el inicio de sesión real se activará cuando el proyecto tenga base de datos de usuarios.)';
+                // Si todos los campos están bien, no se cancela el evento: el navegador
+                // envía el formulario a POST /login y el servidor responde.
             });
         })();
     </script>

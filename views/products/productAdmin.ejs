@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<%- include('../partials/head', { title: 'Panel de administrador | Floristería Andrea', styles: ['/css/admin.css'] }) %>
+<body>
+
+    <%- include('../partials/header') %>
+
+    <main>
+
+        <!-- ===== Título ===== -->
+        <section class="admin-head">
+            <nav class="auth-breadcrumb" aria-label="Ruta de navegación">
+                <a href="/">Inicio</a> / <span aria-current="page">Panel admin</span>
+            </nav>
+            <div class="admin-head-row">
+                <div>
+                    <h1 class="admin-title">Panel de administrador</h1>
+                    <p class="admin-subtitle">Sesión iniciada como <strong><%= locals.adminEmail || 'administrador' %></strong></p>
+                </div>
+                <a href="/admin/productos/nuevo" class="btn-submit admin-new-btn">+ Crear producto</a>
+            </div>
+        </section>
+
+        <!-- ===== Lista de productos ===== -->
+        <section class="admin-list">
+            <% if (products.length > 0) { %>
+                <div class="admin-table">
+                    <div class="admin-row admin-row--head" role="row">
+                        <span>Producto</span>
+                        <span>Categoría</span>
+                        <span>Precio</span>
+                        <span class="admin-row-actions">Acciones</span>
+                    </div>
+
+                    <% products.forEach(function (product) { %>
+                        <div class="admin-row" role="row">
+                            <span class="admin-product">
+                                <img src="/img/<%= product.image %>" alt="<%= product.alt %>">
+                                <span><%= product.name %></span>
+                            </span>
+                            <span data-label="Categoría"><%= product.category %></span>
+                            <span data-label="Precio" class="admin-price"><%= formatPrice(product.price) %></span>
+                            <span class="admin-row-actions">
+                                <a href="/detalle/<%= product.id %>" class="btn-keep">Ver</a>
+                                <a href="/admin/productos/<%= product.id %>/editar" class="btn-rose">Editar</a>
+                            </span>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } else { %>
+                <div class="list-empty">
+                    <p class="list-empty-title">Todavía no hay productos</p>
+                    <p>Crea el primer producto del catálogo.</p>
+                    <a href="/admin/productos/nuevo" class="btn-rose">Crear producto</a>
+                </div>
+            <% } %>
+        </section>
+
+    </main>
+
+    <%- include('../partials/footer') %>
+
+</body>
+</html>

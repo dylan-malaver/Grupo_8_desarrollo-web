@@ -46,6 +46,12 @@ img {
     max-width: 100%;
 }
 
+/* El atributo HTML "hidden" siempre debe ganar, sin importar qué otra regla
+   de este archivo (o de cualquier otro) le ponga "display" a ese elemento. */
+[hidden] {
+    display: none !important;
+}
+
 a {
     color: inherit;
     text-decoration: none;

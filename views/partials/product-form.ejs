@@ -1,0 +1,328 @@
+<%#
+    PARTIAL: formulario de producto, compartido por "crear" y "editar".
+
+    - Crear:  se usa sin la variable "product"  -> formulario vacío
+    - Editar: se usa con la variable "product"  -> formulario con los datos cargados
+
+    Variables que recibe: categories, colors y (solo al editar) product.
+%>
+<%
+    var isEdit = !!locals.product;
+    var p = locals.product || {};
+    var selectedColors = p.colors || [];
+    var imageUrl = isEdit && p.image ? '/img/' + p.image : '';
+%>
+<div class="auth-layout">
+
+    <!-- Columna izquierda: vista previa de la imagen + consejos -->
+    <aside class="auth-side">
+        <div class="auth-media">
+            <img id="image-preview" src="<%= imageUrl %>" alt="Vista previa de la imagen del producto"<%- imageUrl ? '' : ' hidden' %>>
+            <p class="preview-empty" id="preview-empty"<%- imageUrl ? ' hidden' : '' %>>Aquí verás la vista previa de la imagen del producto</p>
+        </div>
+        <div class="auth-side-text">
+            <h2>Un detalle bien presentado se vende mejor</h2>
+            <p>Usa una foto clara y bien iluminada, y describe el producto como se lo contarías a un cliente.</p>
+        </div>
+    </aside>
+
+    <!-- Columna derecha: formulario -->
+    <div class="auth-panel auth-panel--card">
+        <form id="product-form" method="POST" enctype="multipart/form-data" novalidate
+              action="<%= isEdit ? '/admin/productos/' + p.id + '/editar' : '/admin/productos' %>"
+              data-mode="<%= isEdit ? 'edit' : 'create' %>">
+
+            <p class="auth-eyebrow is-caps">Administración</p>
+            <h1 class="auth-title"><%= isEdit ? 'Editar producto' : 'Crear producto' %></h1>
+            <p class="auth-lead">
+                <%= isEdit
+                    ? 'Modifica la información del producto y guarda los cambios.'
+                    : 'Completa los datos para agregar un nuevo producto al catálogo.' %>
+            </p>
+            <% if (isEdit) { %>
+                <p class="form-meta">
+                    Editando: <strong><%= p.name %></strong> ·
+                    <a href="/detalle/<%= p.id %>" class="link-red">Ver en la tienda</a>
+                </p>
+            <% } %>
+
+            <!-- Nombre -->
+            <div class="field">
+                <label for="name">Nombre del producto</label>
+                <input type="text" id="name" name="name" maxlength="60" placeholder="Ej. Ramo de Rosas Rojas"
+                       value="<%= p.name || '' %>" required aria-describedby="name-error">
+                <small class="field-error" id="name-error"></small>
+            </div>
+
+            <!-- Descripción corta -->
+            <div class="field">
+                <label for="summary">Descripción corta</label>
+                <input type="text" id="summary" name="summary" maxlength="100" placeholder="Una frase para las tarjetas del catálogo"
+                       value="<%= p.summary || '' %>" required aria-describedby="summary-error summary-hint">
+                <div class="hint-row">
+                    <span class="field-hint" id="summary-hint">Se muestra en las tarjetas del catálogo.</span>
+                    <span class="field-hint" id="summary-count">0/100</span>
+                </div>
+                <small class="field-error" id="summary-error"></small>
+            </div>
+
+            <!-- Descripción completa -->
+            <div class="field">
+                <label for="description">Descripción</label>
+                <textarea id="description" name="description" rows="4" maxlength="400"
+                          placeholder="Cuenta de qué está hecho el producto y para qué ocasión es ideal"
+                          required aria-describedby="description-error description-hint"><%= p.description || '' %></textarea>
+                <div class="hint-row">
+                    <span class="field-hint" id="description-hint">Se muestra en la página del producto.</span>
+                    <span class="field-hint" id="description-count">0/400</span>
+                </div>
+                <small class="field-error" id="description-error"></small>
+            </div>
+
+            <!-- Imagen -->
+            <div class="field">
+                <label for="image">Imagen</label>
+                <input type="file" id="image" name="image" accept="image/jpeg,image/png,image/webp"
+                       aria-describedby="image-error image-hint">
+                <span class="field-hint" id="image-hint">
+                    <%= isEdit ? 'Déjala vacía para conservar la imagen actual. ' : '' %>JPG, PNG o WebP, máximo 2 MB.
+                </span>
+                <small class="field-error" id="image-error"></small>
+            </div>
+
+            <!-- Categoría y precio -->
+            <div class="field-row">
+                <div class="field">
+                    <label for="category">Categoría</label>
+                    <select id="category" name="category" required aria-describedby="category-error">
+                        <option value="">Selecciona una categoría</option>
+                        <% categories.forEach(function (c) { %>
+                            <option value="<%= c.name %>"<%- p.category === c.name ? ' selected' : '' %>><%= c.name %></option>
+                        <% }); %>
+                    </select>
+                    <small class="field-error" id="category-error"></small>
+                </div>
+
+                <div class="field">
+                    <label for="price">Precio</label>
+                    <div class="price-field">
+                        <span class="currency-prefix" aria-hidden="true">$</span>
+                        <input type="number" id="price" name="price" min="1" max="9999999" step="1" inputmode="numeric"
+                               placeholder="85000" value="<%= p.price || '' %>" required aria-describedby="price-error price-preview">
+                        <span class="currency-suffix" aria-hidden="true">COP</span>
+                    </div>
+                    <span class="field-hint" id="price-preview" aria-live="polite"></span>
+                    <small class="field-error" id="price-error"></small>
+                </div>
+            </div>
+
+            <!-- Colores -->
+            <fieldset class="field field-group">
+                <legend>Colores</legend>
+                <div class="color-options">
+                    <% colors.forEach(function (c) { %>
+                        <label class="color-chip">
+                            <input type="checkbox" name="colors" value="<%= c.name %>"<%- selectedColors.indexOf(c.name) !== -1 ? ' checked' : '' %>>
+                            <span><i class="swatch" style="background: <%= c.swatch %>"></i><%= c.name %></span>
+                        </label>
+                    <% }); %>
+                </div>
+                <small class="field-error" id="colors-error"></small>
+            </fieldset>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-submit"><%= isEdit ? 'Guardar cambios' : 'Crear producto' %></button>
+                <a href="<%= isEdit ? '/detalle/' + p.id : '/productos' %>" class="btn-cancel">Cancelar</a>
+            </div>
+
+            <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+
+            <p class="auth-note is-pill">❤ Los productos que guardes aparecerán en el catálogo de la tienda.</p>
+        </form>
+    </div>
+
+</div>
+
+<script>
+    (function () {
+        var form = document.getElementById('product-form');
+        var status = document.getElementById('form-status');
+        var isEdit = form.getAttribute('data-mode') === 'edit';
+
+        var MAX_IMAGE_MB = 2;
+        var ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
+        function byId(id) { return document.getElementById(id); }
+
+        var nameInput = byId('name');
+        var summaryInput = byId('summary');
+        var descriptionInput = byId('description');
+        var imageInput = byId('image');
+        var categorySelect = byId('category');
+        var priceInput = byId('price');
+        var colorInputs = Array.prototype.slice.call(form.querySelectorAll('input[name="colors"]'));
+
+        function length(input) { return input.value.trim().length; }
+
+        // ----- Reglas de cada campo (devuelven el mensaje de error, o '' si está bien) -----
+        // controls: elementos que se escuchan | focus: elemento que recibe el foco si hay error
+        var fields = {
+            name: {
+                controls: [nameInput], focus: nameInput,
+                validate: function () {
+                    var n = length(nameInput);
+                    if (!n) return '* El nombre del producto es obligatorio';
+                    if (n < 3) return '* El nombre debe tener mínimo 3 caracteres';
+                    return '';
+                }
+            },
+            summary: {
+                controls: [summaryInput], focus: summaryInput,
+                validate: function () {
+                    var n = length(summaryInput);
+                    if (!n) return '* La descripción corta es obligatoria';
+                    if (n < 10) return '* La descripción corta debe tener mínimo 10 caracteres';
+                    return '';
+                }
+            },
+            description: {
+                controls: [descriptionInput], focus: descriptionInput,
+                validate: function () {
+                    var n = length(descriptionInput);
+                    if (!n) return '* La descripción es obligatoria';
+                    if (n < 20) return '* La descripción debe tener mínimo 20 caracteres';
+                    return '';
+                }
+            },
+            image: {
+                controls: [imageInput], focus: imageInput,
+                validate: function () {
+                    var file = imageInput.files[0];
+                    if (!file) return isEdit ? '' : '* Selecciona una imagen del producto';
+                    if (ALLOWED_TYPES.indexOf(file.type) === -1) return '* La imagen debe ser JPG, PNG o WebP';
+                    if (file.size > MAX_IMAGE_MB * 1024 * 1024) return '* La imagen pesa más de ' + MAX_IMAGE_MB + ' MB';
+                    return '';
+                }
+            },
+            category: {
+                controls: [categorySelect], focus: categorySelect,
+                validate: function () {
+                    return categorySelect.value ? '' : '* Selecciona una categoría';
+                }
+            },
+            price: {
+                controls: [priceInput], focus: priceInput,
+                validate: function () {
+                    var raw = priceInput.value.trim();
+                    if (!raw) return '* El precio es obligatorio';
+                    if (!/^\d+$/.test(raw) || Number(raw) < 1 || Number(raw) > 9999999) {
+                        return '* Ingresa un precio válido: solo números enteros, mayor a 0';
+                    }
+                    return '';
+                }
+            },
+            colors: {
+                controls: colorInputs, focus: colorInputs[0],
+                validate: function () {
+                    var any = colorInputs.some(function (c) { return c.checked; });
+                    return any ? '' : '* Selecciona al menos un color';
+                }
+            }
+        };
+
+        // Muestra u oculta el error de un campo. Devuelve true si el campo es válido.
+        function checkField(name) {
+            var field = fields[name];
+            var message = field.validate();
+            var wrapper = field.focus.closest('.field');
+
+            byId(name + '-error').textContent = message;
+            wrapper.classList.toggle('has-error', message !== '');
+            if (field.controls.length === 1) {
+                field.controls[0].setAttribute('aria-invalid', message !== '' ? 'true' : 'false');
+            }
+            return message === '';
+        }
+
+        Object.keys(fields).forEach(function (name) {
+            var field = fields[name];
+            var wrapper = field.focus.closest('.field');
+
+            field.controls.forEach(function (control) {
+                var isChoice = control.type === 'checkbox' || control.type === 'file' || control.tagName === 'SELECT';
+
+                // Al salir del campo se valida; mientras se corrige, el error desaparece apenas queda bien
+                control.addEventListener(isChoice ? 'change' : 'blur', function () { checkField(name); });
+                control.addEventListener('input', function () {
+                    if (wrapper.classList.contains('has-error')) checkField(name);
+                });
+            });
+        });
+
+        // ----- Contadores de caracteres -----
+        function bindCounter(input, counterId) {
+            var counter = byId(counterId);
+            var max = input.getAttribute('maxlength');
+            function update() { counter.textContent = input.value.length + '/' + max; }
+            input.addEventListener('input', update);
+            update();
+        }
+        bindCounter(summaryInput, 'summary-count');
+        bindCounter(descriptionInput, 'description-count');
+
+        // ----- Precio: muestra cómo se verá en la tienda -----
+        var pricePreview = byId('price-preview');
+        function updatePricePreview() {
+            var raw = priceInput.value.trim();
+            if (/^\d+$/.test(raw) && Number(raw) > 0) {
+                pricePreview.textContent = 'Se mostrará como $ ' + String(Number(raw)).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' COP';
+            } else {
+                pricePreview.textContent = '';
+            }
+        }
+        priceInput.addEventListener('input', updatePricePreview);
+        updatePricePreview();
+
+        // ----- Vista previa de la imagen elegida -----
+        var previewImg = byId('image-preview');
+        var previewEmpty = byId('preview-empty');
+        var objectUrl = null;
+
+        imageInput.addEventListener('change', function () {
+            var file = imageInput.files[0];
+            // Si el archivo no es una imagen válida, la vista previa no cambia
+            if (!file || ALLOWED_TYPES.indexOf(file.type) === -1) return;
+
+            if (objectUrl) URL.revokeObjectURL(objectUrl);
+            objectUrl = URL.createObjectURL(file);
+            previewImg.src = objectUrl;
+            previewImg.hidden = false;
+            previewEmpty.hidden = true;
+        });
+
+        // ----- Enviar -----
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            status.textContent = '';
+            status.className = 'form-status';
+
+            var firstInvalid = null;
+            Object.keys(fields).forEach(function (name) {
+                if (!checkField(name) && !firstInvalid) firstInvalid = fields[name].focus;
+            });
+
+            if (firstInvalid) {
+                firstInvalid.focus();
+                return;
+            }
+
+            // TODO (cuando exista el backend): enviar el formulario al servidor. Como incluye una imagen,
+            // se enviaría como multipart/form-data (por ejemplo new FormData(form) con fetch, o quitando este
+            // preventDefault para que el formulario se envíe solo).
+            status.className = 'form-status is-success';
+            status.textContent = isEdit
+                ? '✓ Datos válidos. (Demostración: los cambios se guardarán cuando el proyecto tenga base de datos de productos.)'
+                : '✓ Datos válidos. (Demostración: el producto se guardará y aparecerá en el catálogo cuando el proyecto tenga base de datos.)';
+        });
+    })();
+</script>

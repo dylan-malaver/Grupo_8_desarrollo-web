@@ -21,8 +21,13 @@
         <a href="/carrito" class="icon-btn" aria-label="Carrito">🛒</a>
         <span class="header-divider" aria-hidden="true"></span>
         <div class="auth-buttons">
-            <a href="/login" class="btn-red">Iniciar sesión</a>
-            <a href="/registro" class="btn-red">Registrarse</a>
+            <% if (locals.isAdmin) { %>
+                <a href="/admin/productos" class="btn-red">Panel admin</a>
+                <a href="/logout" class="btn-red">Cerrar sesión</a>
+            <% } else { %>
+                <a href="/login" class="btn-red">Iniciar sesión</a>
+                <a href="/registro" class="btn-red">Registrarse</a>
+            <% } %>
         </div>
     </div>
 </header>

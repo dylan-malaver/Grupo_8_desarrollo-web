@@ -349,6 +349,11 @@
     color: #14501a;
 }
 
+.form-status.is-error {
+    background-color: #f3d3d3;
+    color: #7a0d0d;
+}
+
 .auth-switch {
     display: flex;
     justify-content: space-between;

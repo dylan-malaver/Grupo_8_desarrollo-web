@@ -1,4 +1,5 @@
 const express = require('express');
+const session = require('express-session');
 const path = require('path');
 
 const mainRoutes = require('./routes/mainRoutes');
@@ -14,8 +15,24 @@ app.set('views', path.join(__dirname, 'views'));
 // Archivos públicos (css, imágenes)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Leer datos de formularios (req.body) enviados por POST
+// Leer los datos que envían los formularios (login, crear/editar producto, etc.)
 app.use(express.urlencoded({ extended: true }));
+
+// Sesión: recuerda si hay un administrador con la sesión iniciada.
+// TODO (sprint de Middlewares + Auth): mover "secret" a una variable de entorno.
+app.use(session({
+    secret: 'floristeria-andrea-secret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { maxAge: 1000 * 60 * 60 * 4 } // la sesión dura 4 horas
+}));
+
+// Disponible en todas las vistas: para que el header sepa si hay un administrador conectado
+app.use((req, res, next) => {
+    res.locals.isAdmin = Boolean(req.session && req.session.isAdmin);
+    res.locals.adminEmail = (req.session && req.session.adminEmail) || null;
+    next();
+});
 
 // Función disponible en todas las vistas: 85000 -> "$ 85.000 COP"
 app.locals.formatPrice = (value) =>

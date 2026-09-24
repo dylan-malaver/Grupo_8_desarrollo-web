@@ -7,6 +7,7 @@
 // - id:      va en la dirección de la página (/detalle/<id>). Sin espacios ni tildes.
 // - image:   nombre del archivo dentro de public/img
 // - price:   número sin puntos (85000 = $ 85.000 COP)
+// - colors:  lista de colores del producto; deben existir en colorOptions (más abajo)
 // =========================================================
 const products = [
     {
@@ -19,7 +20,8 @@ const products = [
         care: 'Colócalo en un florero con agua limpia, corta un poco los tallos en diagonal y cambia el agua cada dos días. Mantenlo lejos del sol directo.',
         price: 85000,
         image: 'prod-rosas-rojas.jpg',
-        alt: 'Ramo de rosas rojas con lazo'
+        alt: 'Ramo de rosas rojas con lazo',
+        colors: ['Rojo', 'Blanco']
     },
     {
         id: 'arreglo-floral-elegante',
@@ -31,7 +33,8 @@ const products = [
         care: 'Mantén el agua o la espuma floral siempre húmeda y ubica el arreglo lejos del sol directo y de corrientes de aire.',
         price: 120000,
         image: 'prod-arreglo-elegante.jpg',
-        alt: 'Arreglo floral elegante'
+        alt: 'Arreglo floral elegante',
+        colors: ['Rosado', 'Blanco']
     },
     {
         id: 'ramo-flores-mixtas',
@@ -43,7 +46,8 @@ const products = [
         care: 'Colócalo en un florero con agua limpia, corta un poco los tallos en diagonal y cambia el agua cada dos días. Mantenlo lejos del sol directo.',
         price: 65000,
         image: 'prod-flores-mixtas.jpg',
-        alt: 'Ramo de flores mixtas'
+        alt: 'Ramo de flores mixtas',
+        colors: ['Multicolor', 'Amarillo', 'Rosado']
     },
     {
         id: 'detalle-floral-romantico',
@@ -55,7 +59,8 @@ const products = [
         care: 'Mantén la espuma floral húmeda y ubica la caja lejos del sol directo y de corrientes de aire.',
         price: 95000,
         image: 'prod-detalle-romantico.jpg',
-        alt: 'Detalle floral romántico en tonos pastel'
+        alt: 'Detalle floral romántico en tonos pastel',
+        colors: ['Rosado']
     },
     {
         id: 'arreglo-cumpleanos',
@@ -67,7 +72,8 @@ const products = [
         care: 'Mantén el agua o la espuma floral siempre húmeda y ubica el arreglo lejos del sol directo.',
         price: 70000,
         image: 'cat-cumpleanos.jpg',
-        alt: 'Globos de colores para cumpleaños'
+        alt: 'Globos de colores para cumpleaños',
+        colors: ['Multicolor']
     }
 ];
 
@@ -90,6 +96,18 @@ const categories = [
     'Aniversarios',
     'Ocasiones especiales'
 ].map((name) => ({ name, slug: slugify(name) }));
+
+// Colores que se pueden elegir en el formulario de administrador
+// (swatch = cómo se pinta el circulito de color)
+const colorOptions = [
+    { name: 'Rojo',       swatch: '#c62828' },
+    { name: 'Rosado',     swatch: '#f48fb1' },
+    { name: 'Blanco',     swatch: '#ffffff' },
+    { name: 'Amarillo',   swatch: '#fdd835' },
+    { name: 'Naranja',    swatch: '#fb8c00' },
+    { name: 'Morado',     swatch: '#8e24aa' },
+    { name: 'Multicolor', swatch: 'conic-gradient(#e53935, #fdd835, #43a047, #1e88e5, #8e24aa, #e53935)' }
+];
 
 // Cada producto guarda también el "slug" de su categoría
 products.forEach((p) => {
@@ -120,6 +138,11 @@ const Product = {
     // Las 6 categorías del sitio: [{ name, slug }]
     getCategories() {
         return categories;
+    },
+
+    // Colores disponibles para el formulario: [{ name, swatch }]
+    getColors() {
+        return colorOptions;
     },
 
     // Productos de una categoría, según su slug (por ejemplo "ramos-de-flores")

@@ -321,10 +321,6 @@
     margin-right: auto;
 }
 
-/* Necesario para poder ocultar tarjetas con el atributo hidden */
-.product-card[hidden] {
-    display: none;
-}
 
 /* =========================================================
    RESPONSIVE
