@@ -2,6 +2,7 @@
 // CONTROLADOR de productos: listado, detalle, carrito y administración
 // =========================================================
 const Product = require('../models/product');
+const path = require('path');
 
 const productController = {
     // GET /productos  ->  listado de todos los productos
@@ -30,6 +31,68 @@ const productController = {
             colors: Product.getColors()
         });
     },
+    
+    // POST /admin/productos: guardar un producto nuevo
+    store(req, res) {
+        const name = (req.body.name || '').trim();
+        const summary = (req.body.summary || '').trim();
+        const description = (req.body.description || '').trim();
+        const category = (req.body.category || '').trim();
+        const price = Number(req.body.price);
+        const colors = req.body.colors
+            ? (Array.isArray(req.body.colors) ? req.body.colors : [req.body.colors])
+            : [];
+
+        if (!name || !summary || !description || !category ||
+            !Number.isInteger(price) || price < 1 || price > 9999999 ||
+            colors.length === 0) {
+            return res.status(400).send(
+                '<h1>Datos inválidos</h1><p>Revisa los campos del formulario.</p>' +
+                '<p><a href="/admin/productos/nuevo">Volver al formulario</a></p>'
+            );
+        }
+
+        if (!req.file) {
+            return res.status(400).send(
+                '<h1>Falta la imagen</h1><p>Selecciona una imagen para el producto.</p>' +
+                '<p><a href="/admin/productos/nuevo">Volver al formulario</a></p>'
+            );
+        }
+
+        const idBase = name
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-|-$/g, '');
+
+        let id = idBase || 'producto';
+        let contador = 1;
+
+        while (Product.findById(id)) {
+            id = idBase + '-' + contador;
+            contador++;
+        }
+
+        const product = {
+            id,
+            name,
+            summary,
+            description,
+            details: description,
+            care: '',
+            category,
+            price,
+            image: req.file.filename,
+            alt: name,
+            colors
+        };
+
+        Product.create(product);
+
+        return res.redirect('/admin/productos');
+    },
+
 
     // GET /admin/productos/:id/editar  ->  formulario para editar un producto
     edit(req, res) {
@@ -46,6 +109,96 @@ const productController = {
             categories: Product.getCategories(),
             colors: Product.getColors()
         });
+    },
+    
+    // POST /admin/productos/:id/editar: actualizar un producto existente
+    update(req, res) {
+        const id = req.params.id;
+        const existingProduct = Product.findById(id);
+
+        if (!existingProduct) {
+            return res.status(404).send(
+                '<h1>Producto no encontrado</h1>' +
+                '<p><a href="/admin/productos">Volver a administración</a></p>'
+            );
+        }
+
+        const name = (req.body.name || '').trim();
+        const summary = (req.body.summary || '').trim();
+        const description = (req.body.description || '').trim();
+        const category = (req.body.category || '').trim();
+        const price = Number(req.body.price);
+
+        const colors = req.body.colors
+            ? (Array.isArray(req.body.colors)
+                ? req.body.colors
+                : [req.body.colors])
+            : [];
+
+        if (
+            !name ||
+            !summary ||
+            !description ||
+            !category ||
+            !Number.isInteger(price) ||
+            price < 1 ||
+            price > 9999999 ||
+            colors.length === 0
+        ) {
+            return res.status(400).send(
+                '<h1>Datos inválidos</h1>' +
+                '<p>Revisa los campos del formulario.</p>' +
+                '<p><a href="/admin/productos/' + encodeURIComponent(id) +
+                '/editar">Volver al formulario</a></p>'
+            );
+        }
+
+        const updatedData = {
+            name,
+            summary,
+            description,
+            details: description,
+            category,
+            price,
+            colors,
+            alt: name
+        };
+
+        // Si se seleccionó otra imagen, actualizar su nombre.
+        // Si no se seleccionó una imagen, conservar la anterior.
+        if (req.file) {
+            updatedData.image = req.file.filename;
+        }
+
+        Product.update(id, updatedData);
+
+        return res.redirect('/admin/productos');
+    },
+
+
+    // POST /admin/productos/:id/eliminar: eliminar un producto
+    remove(req, res) {
+        const id = req.params.id;
+
+        const product = Product.findById(id);
+
+        if (!product) {
+            return res.status(404).send(
+                '<h1>Producto no encontrado</h1>' +
+                '<p><a href="/admin/productos">Volver a administración</a></p>'
+            );
+        }
+
+        const deleted = Product.delete(id);
+
+        if (!deleted) {
+            return res.status(500).send(
+                '<h1>No se pudo eliminar el producto</h1>' +
+                '<p><a href="/admin/productos">Volver a administración</a></p>'
+            );
+        }
+
+        return res.redirect('/admin/productos');
     },
 
     // GET /detalle  ->  lleva al primer producto

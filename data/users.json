@@ -1,0 +1,11 @@
+
+[
+    {
+        "id": 1,
+        "firstName": "Usuario",
+        "lastName": "Ejemplo",
+        "email": "usuario@example.com",
+        "password": "",
+        "category": "cliente"
+    }
+]

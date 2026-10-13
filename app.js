@@ -1,4 +1,5 @@
 const express = require('express');
+const methodOverride = require('method-override');
 const session = require('express-session');
 const path = require('path');
 
@@ -17,6 +18,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Leer los datos que envían los formularios (login, crear/editar producto, etc.)
 app.use(express.urlencoded({ extended: true }));
+
+// Permite usar PUT y DELETE desde formularios HTML con ?_method=PUT o ?_method=DELETE
+app.use(methodOverride('_method'));
 
 // Sesión: recuerda si hay un administrador con la sesión iniciada.
 // TODO (sprint de Middlewares + Auth): mover "secret" a una variable de entorno.
