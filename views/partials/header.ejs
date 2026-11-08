@@ -21,8 +21,16 @@
         <a href="/carrito" class="icon-btn" aria-label="Carrito">🛒</a>
         <span class="header-divider" aria-hidden="true"></span>
         <div class="auth-buttons">
-            <% if (locals.isAdmin) { %>
-                <a href="/admin/productos" class="btn-red">Panel admin</a>
+            <% if (locals.userLogged) { %>
+                <a href="/perfil" class="header-user">
+                    <% if (userLogged.image) { %>
+                        <img src="/img/users/<%= userLogged.image %>" alt="" width="28" height="28" style="border-radius:50%;object-fit:cover;vertical-align:middle;">
+                    <% } %>
+                    Hola, <%= userLogged.firstName %>
+                </a>
+                <% if (locals.isAdmin) { %>
+                    <a href="/admin/productos" class="btn-red">Panel admin</a>
+                <% } %>
                 <a href="/logout" class="btn-red">Cerrar sesión</a>
             <% } else { %>
                 <a href="/login" class="btn-red">Iniciar sesión</a>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<%- include('../partials/head', { title: 'Mi perfil | Floristería Andrea', styles: ['/css/auth.css'] }) %>
+<body>
+
+    <%- include('../partials/header') %>
+
+    <main>
+        <section class="auth-crumb">
+            <nav class="auth-breadcrumb" aria-label="Ruta de navegación">
+                <a href="/">Inicio</a> / <span aria-current="page">Mi perfil</span>
+            </nav>
+        </section>
+
+        <section class="auth-section">
+            <div class="auth-panel auth-panel--card" style="max-width:520px;margin:0 auto;text-align:center;">
+                <p class="auth-eyebrow">Mi Cuenta</p>
+                <h1 class="auth-title">Hola, <%= userLogged.firstName %> 🌸</h1>
+
+                <% if (userLogged.image) { %>
+                    <img src="/img/users/<%= userLogged.image %>" alt="Foto de perfil de <%= userLogged.firstName %>"
+                         width="140" height="140" style="border-radius:50%;object-fit:cover;margin:16px 0;">
+                <% } %>
+
+                <ul style="list-style:none;padding:0;line-height:2;">
+                    <li><strong>Nombre:</strong> <%= userLogged.firstName %> <%= userLogged.lastName %></li>
+                    <li><strong>Correo:</strong> <%= userLogged.email %></li>
+                    <% if (userLogged.phone) { %><li><strong>Teléfono:</strong> <%= userLogged.phone %></li><% } %>
+                    <li><strong>Categoría:</strong> <%= userLogged.category %></li>
+                </ul>
+
+                <% if (locals.isAdmin) { %>
+                    <a href="/admin/productos" class="btn-submit" style="display:inline-block;text-decoration:none;">Ir al panel de administración</a>
+                <% } %>
+                <p style="margin-top:16px;"><a href="/logout" class="link-red">Cerrar sesión</a></p>
+            </div>
+        </section>
+    </main>
+
+    <%- include('../partials/footer') %>
+
+</body>
+</html>

@@ -31,14 +31,19 @@
 
                 <!-- Columna derecha: formulario -->
                 <div class="auth-panel auth-panel--card">
-                    <form id="register-form" method="POST" action="/registro" novalidate>
+                    <form id="register-form" method="POST" action="/registro" enctype="multipart/form-data" novalidate>
                         <p class="auth-eyebrow is-caps">Floristería Andrea</p>
                         <h1 class="auth-title">Crear una cuenta</h1>
                         <p class="auth-lead">Regístrate para disfrutar de una mejor experiencia más sencilla al explorar y realizar tus pedidos.</p>
 
+                        <% if (locals.error) { %>
+                            <p class="form-status is-error" role="alert"><%= error %></p>
+                        <% } %>
+
                         <div class="field">
                             <label for="fullname">Nombre completo</label>
                             <input type="text" id="fullname" name="fullname" placeholder="Ingresa tu nombre completo"
+                                   value="<%= (locals.old && old.fullname) || '' %>"
                                    autocomplete="name" required aria-describedby="fullname-error">
                             <small class="field-error" id="fullname-error"></small>
                         </div>
@@ -46,6 +51,7 @@
                         <div class="field">
                             <label for="email">Correo electrónico</label>
                             <input type="email" id="email" name="email" placeholder="ejemplo@correo.com"
+                                   value="<%= (locals.old && old.email) || '' %>"
                                    autocomplete="email" required aria-describedby="email-error">
                             <small class="field-error" id="email-error"></small>
                         </div>
@@ -53,6 +59,7 @@
                         <div class="field">
                             <label for="phone">Número de teléfono</label>
                             <input type="tel" id="phone" name="phone" placeholder="301 000 0000"
+                                   value="<%= (locals.old && old.phone) || '' %>"
                                    autocomplete="tel" required aria-describedby="phone-error">
                             <small class="field-error" id="phone-error"></small>
                         </div>
@@ -89,6 +96,12 @@
                                 </button>
                             </div>
                             <small class="field-error" id="confirmPassword-error"></small>
+                        </div>
+
+                        <!-- Imagen de perfil (la procesa Multer en el servidor) -->
+                        <div class="field">
+                            <label for="image">Imagen de perfil (opcional)</label>
+                            <input type="file" id="image" name="image" accept="image/png, image/jpeg, image/webp">
                         </div>
 
                         <div class="field field-check">
@@ -230,8 +243,9 @@
             });
 
             // ----- Enviar -----
+            // Solo se cancela el envío si hay errores de formato. Si todo está bien,
+            // el navegador envía el formulario a POST /registro y el servidor responde.
             form.addEventListener('submit', function (event) {
-                event.preventDefault();
                 status.textContent = '';
                 status.className = 'form-status';
 
@@ -241,15 +255,9 @@
                 });
 
                 if (firstInvalid) {
+                    event.preventDefault();
                     firstInvalid.focus();
-                    return;
                 }
-
-                // TODO (cuando exista el backend): enviar los datos al servidor, por ejemplo con
-                // fetch('/registro', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-                //                      body: JSON.stringify({ fullname: ..., email: ..., phone: ..., password: ... }) })
-                status.className = 'form-status is-success';
-                status.textContent = '✓ Datos válidos. (Demostración: la cuenta real se creará cuando el proyecto tenga base de datos de usuarios.)';
             });
         })();
     </script>

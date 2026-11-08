@@ -1,29 +1,22 @@
-Retrospectiva Sprint 1
-
 Comenzar a hacer
-
-Organizar mejor las tareas antes de comenzar a desarrollar el proyecto.
-Definir desde el inicio la estructura de las diferentes vistas del sitio.
-Realizar pruebas en diferentes tamaños de pantalla para verificar el diseño.
+Probar el proyecto desde cero (`npm install` y `npm start`) antes de dar un avance por terminado.
+Hacer commits pequeños y frecuentes, para poder volver atrás si algo se rompe.
 
 Hacer más
-
-Revisar con más detalle el diseño antes de comenzar a programar.
-Probar los enlaces entre las diferentes vistas del sitio.
-Buscar más referencias de otros sitios web para mejorar las ideas de diseño.
+Leer completo el mensaje de error de la terminal antes de buscar ayuda: casi siempre indica el archivo y la línea del problema.
+Verificar la estructura de carpetas y archivos antes de ejecutar.
 
 Continuar haciendo
-
-Utilizar wireframes para organizar visualmente las páginas antes de desarrollarlas.
-Mantener una estructura organizada del proyecto.
-Revisar que el diseño realizado cumpla con los requisitos establecidos para la actividad.
+Mantener la estructura MVC (rutas, controladores, modelos y vistas separados).
+Reutilizar partials (head, header, footer) para no repetir código.
+Mantener el tablero de trabajo actualizado.
 
 Hacer menos
-
-Realizar cambios constantes en el diseño después de comenzar a desarrollar.
-Dejar algunas decisiones del proyecto para el último momento.
+Ejecutar comandos de npm sin confirmar antes en qué carpeta estoy parado.
+Dejar para el final las pruebas del sitio.
 
 Dejar de hacer
+Tener carpetas duplicadas con el mismo nombre dentro del proyecto, porque causó confusión al ejecutar.
 
-Comenzar a desarrollar una página sin tener clara su estructura.
-Acumular tareas pendientes para el final del Sprint.
+Principal problema del sprint
+El proyecto no corría. Las causas fueron ejecutar los comandos en la carpeta equivocada (había dos con el mismo nombre, una dentro de la otra) y un archivo que faltaba en una ruta. Se resolvió revisando el error de la terminal y la estructura del proyecto.

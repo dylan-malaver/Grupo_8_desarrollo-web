@@ -237,5 +237,6 @@ Dylan Malaver
 8. Tablero de trabajo
 
 Puedes seguir el progreso y la organización de nuestras tareas en el siguiente enlace:
-- [Tablero de trabajo (Trello / GitHub Projects)](https://github.com/users/dylan-malaver/projects/2/views/1)
-- https://github.com/users/dylan-malaver/projects/4
+
+## Tablero de trabajo
+Organización del proyecto (Sprint 5): https://github.com/users/dylan-malaver/projects/5/views/2
