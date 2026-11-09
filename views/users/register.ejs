@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+<% var fe = locals.errors || {}; var o = locals.old || {}; %>
 <%- include('../partials/head', { title: 'Crear Cuenta | Floristería Andrea', styles: ['/css/auth.css'] }) %>
 <body>
 
@@ -36,39 +37,35 @@
                         <h1 class="auth-title">Crear una cuenta</h1>
                         <p class="auth-lead">Regístrate para disfrutar de una mejor experiencia más sencilla al explorar y realizar tus pedidos.</p>
 
-                        <% if (locals.error) { %>
-                            <p class="form-status is-error" role="alert"><%= error %></p>
-                        <% } %>
-
-                        <div class="field">
-                            <label for="fullname">Nombre completo</label>
-                            <input type="text" id="fullname" name="fullname" placeholder="Ingresa tu nombre completo"
-                                   value="<%= (locals.old && old.fullname) || '' %>"
+                        <div class="field <%= fe.fullname ? 'has-error' : '' %>">
+                            <label for="fullname">Nombre y apellido</label>
+                            <input type="text" id="fullname" name="fullname" placeholder="Ej. María López"
+                                   value="<%= o.fullname || '' %>"
                                    autocomplete="name" required aria-describedby="fullname-error">
-                            <small class="field-error" id="fullname-error"></small>
+                            <small class="field-error" id="fullname-error"><%= fe.fullname ? fe.fullname.msg : '' %></small>
                         </div>
 
-                        <div class="field">
+                        <div class="field <%= fe.email ? 'has-error' : '' %>">
                             <label for="email">Correo electrónico</label>
                             <input type="email" id="email" name="email" placeholder="ejemplo@correo.com"
-                                   value="<%= (locals.old && old.email) || '' %>"
+                                   value="<%= o.email || '' %>"
                                    autocomplete="email" required aria-describedby="email-error">
-                            <small class="field-error" id="email-error"></small>
+                            <small class="field-error" id="email-error"><%= fe.email ? fe.email.msg : '' %></small>
                         </div>
 
-                        <div class="field">
+                        <div class="field <%= fe.phone ? 'has-error' : '' %>">
                             <label for="phone">Número de teléfono</label>
                             <input type="tel" id="phone" name="phone" placeholder="301 000 0000"
-                                   value="<%= (locals.old && old.phone) || '' %>"
+                                   value="<%= o.phone || '' %>"
                                    autocomplete="tel" required aria-describedby="phone-error">
-                            <small class="field-error" id="phone-error"></small>
+                            <small class="field-error" id="phone-error"><%= fe.phone ? fe.phone.msg : '' %></small>
                         </div>
 
-                        <div class="field">
+                        <div class="field <%= fe.password ? 'has-error' : '' %>">
                             <label for="password">Contraseña</label>
                             <div class="password-field">
-                                <input type="password" id="password" name="password" placeholder="Crea una contraseña"
-                                       autocomplete="new-password" required aria-describedby="password-error">
+                                <input type="password" id="password" name="password" placeholder="Mínimo 8 caracteres"
+                                       autocomplete="new-password" required aria-describedby="password-hint password-error">
                                 <button type="button" class="toggle-pass" data-target="password"
                                         aria-label="Mostrar contraseña" aria-pressed="false">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -78,10 +75,11 @@
                                     </svg>
                                 </button>
                             </div>
-                            <small class="field-error" id="password-error"></small>
+                            <small class="field-hint" id="password-hint">Usa mayúsculas, minúsculas, un número y un carácter especial.</small>
+                            <small class="field-error" id="password-error"><%= fe.password ? fe.password.msg : '' %></small>
                         </div>
 
-                        <div class="field">
+                        <div class="field <%= fe.confirmPassword ? 'has-error' : '' %>">
                             <label for="confirmPassword">Confirmar contraseña</label>
                             <div class="password-field">
                                 <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Repite tu contraseña"
@@ -95,16 +93,19 @@
                                     </svg>
                                 </button>
                             </div>
-                            <small class="field-error" id="confirmPassword-error"></small>
+                            <small class="field-error" id="confirmPassword-error"><%= fe.confirmPassword ? fe.confirmPassword.msg : '' %></small>
                         </div>
 
                         <!-- Imagen de perfil (la procesa Multer en el servidor) -->
-                        <div class="field">
+                        <div class="field <%= fe.image ? 'has-error' : '' %>">
                             <label for="image">Imagen de perfil (opcional)</label>
-                            <input type="file" id="image" name="image" accept="image/png, image/jpeg, image/webp">
+                            <input type="file" id="image" name="image" accept="image/jpeg,image/png,image/gif"
+                                   aria-describedby="image-hint image-error">
+                            <small class="field-hint" id="image-hint">JPG, JPEG, PNG o GIF, máximo 2 MB.</small>
+                            <small class="field-error" id="image-error"><%= fe.image ? fe.image.msg : '' %></small>
                         </div>
 
-                        <div class="field field-check">
+                        <div class="field field-check <%= fe.terms ? 'has-error' : '' %>">
                             <div class="check-row">
                                 <input type="checkbox" id="terms" name="terms" required aria-describedby="terms-error">
                                 <label for="terms">
@@ -112,7 +113,7 @@
                                     <a href="#" class="link-red">política de privacidad</a>
                                 </label>
                             </div>
-                            <small class="field-error" id="terms-error"></small>
+                            <small class="field-error" id="terms-error"><%= fe.terms ? fe.terms.msg : '' %></small>
                         </div>
 
                         <button type="submit" class="btn-submit">Crear cuenta</button>
@@ -140,18 +141,28 @@
             var form = document.getElementById('register-form');
             var status = document.getElementById('form-status');
             var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            var ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif'];
+            var ALLOWED_EXT = /\.(jpe?g|png|gif)$/i;
+            var MAX_IMAGE_MB = 2;
 
             var passwordInput = document.getElementById('password');
             var confirmInput = document.getElementById('confirmPassword');
+            var imageInput = document.getElementById('image');
 
             // ----- Reglas de cada campo (devuelven el mensaje de error, o '' si está bien) -----
+            // Son las mismas reglas que valida el servidor (validations/userValidations.js)
             var fields = {
                 fullname: {
                     input: document.getElementById('fullname'),
                     validate: function (input) {
                         var value = input.value.trim();
-                        if (!value) return '* El nombre completo es obligatorio';
-                        if (value.length < 3) return '* Escribe tu nombre completo (mínimo 3 letras)';
+                        if (!value) return '* El nombre y el apellido son obligatorios';
+
+                        var parts = value.split(/\s+/);
+                        if (parts.length < 2) return '* Escribe tu nombre y tu apellido';
+                        if (parts.some(function (p) { return p.length < 2; })) {
+                            return '* El nombre y el apellido deben tener al menos 2 caracteres';
+                        }
                         return '';
                     }
                 },
@@ -180,8 +191,12 @@
                 password: {
                     input: passwordInput,
                     validate: function (input) {
-                        if (!input.value) return '* La contraseña es obligatoria';
-                        if (input.value.length < 6) return '* La contraseña debe tener mínimo 6 caracteres';
+                        var v = input.value;
+                        if (!v) return '* La contraseña es obligatoria';
+                        if (v.length < 8) return '* La contraseña debe tener al menos 8 caracteres';
+                        if (!/[a-z]/.test(v) || !/[A-Z]/.test(v) || !/\d/.test(v) || !/[^A-Za-z0-9]/.test(v)) {
+                            return '* Debe tener mayúsculas, minúsculas, un número y un carácter especial';
+                        }
                         return '';
                     }
                 },
@@ -190,6 +205,21 @@
                     validate: function (input) {
                         if (!input.value) return '* Confirma tu contraseña';
                         if (input.value !== passwordInput.value) return '* Las contraseñas no coinciden';
+                        return '';
+                    }
+                },
+                image: {
+                    input: imageInput,
+                    validate: function (input) {
+                        var file = input.files[0];
+                        if (!file) return ''; // la imagen es opcional
+
+                        if (ALLOWED_TYPES.indexOf(file.type) === -1 || !ALLOWED_EXT.test(file.name)) {
+                            return '* La imagen debe ser un archivo JPG, JPEG, PNG o GIF';
+                        }
+                        if (file.size > MAX_IMAGE_MB * 1024 * 1024) {
+                            return '* La imagen no puede pesar más de ' + MAX_IMAGE_MB + ' MB';
+                        }
                         return '';
                     }
                 },
@@ -218,9 +248,10 @@
             Object.keys(fields).forEach(function (name) {
                 var input = fields[name].input;
                 var wrapper = input.closest('.field');
+                var isChoice = input.type === 'checkbox' || input.type === 'file';
 
                 // Al salir del campo se valida; mientras se corrige, el error desaparece apenas queda bien
-                input.addEventListener(input.type === 'checkbox' ? 'change' : 'blur', function () { checkField(name); });
+                input.addEventListener(isChoice ? 'change' : 'blur', function () { checkField(name); });
                 input.addEventListener('input', function () {
                     if (wrapper.classList.contains('has-error')) checkField(name);
                 });
@@ -243,8 +274,8 @@
             });
 
             // ----- Enviar -----
-            // Solo se cancela el envío si hay errores de formato. Si todo está bien,
-            // el navegador envía el formulario a POST /registro y el servidor responde.
+            // Solo se cancela el envío si hay errores. Si todo está bien, el navegador envía el
+            // formulario a POST /registro y el servidor vuelve a validar (nunca confiamos solo en el navegador).
             form.addEventListener('submit', function (event) {
                 status.textContent = '';
                 status.className = 'form-status';

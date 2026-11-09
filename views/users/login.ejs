@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+<% var fe = locals.errors || {}; var o = locals.old || {}; %>
 <%- include('../partials/head', { title: 'Iniciar Sesión | Floristería Andrea', styles: ['/css/auth.css'] }) %>
 <body>
 
@@ -24,24 +25,21 @@
 
                 <div class="auth-panel">
                     <form id="login-form" method="POST" action="/login" novalidate>
-                        <input type="hidden" name="redirectTo" value="<%= redirectTo %>">
+                        <input type="hidden" name="redirectTo" value="<%= locals.redirectTo || '/admin/productos' %>">
 
                         <p class="auth-eyebrow">Mi Cuenta</p>
                         <h1 class="auth-title">Bienvenido de nuevo</h1>
                         <p class="auth-lead">Inicia sesión para continuar con tu experiencia en Floristería Andrea</p>
 
-                        <% if (error) { %>
-                            <p class="form-status is-error" role="alert"><%= error %></p>
-                        <% } %>
-
-                        <div class="field">
+                        <div class="field <%= fe.email ? 'has-error' : '' %>">
                             <label for="email">Correo electrónico</label>
                             <input type="email" id="email" name="email" placeholder="Ingresa tu correo"
+                                   value="<%= o.email || '' %>"
                                    autocomplete="email" required aria-describedby="email-error">
-                            <small class="field-error" id="email-error"></small>
+                            <small class="field-error" id="email-error"><%= fe.email ? fe.email.msg : '' %></small>
                         </div>
 
-                        <div class="field">
+                        <div class="field <%= fe.password ? 'has-error' : '' %>">
                             <label for="password">Contraseña</label>
                             <div class="password-field">
                                 <input type="password" id="password" name="password" placeholder="Ingresa tu contraseña"
@@ -55,7 +53,7 @@
                                     </svg>
                                 </button>
                             </div>
-                            <small class="field-error" id="password-error"></small>
+                            <small class="field-error" id="password-error"><%= fe.password ? fe.password.msg : '' %></small>
                         </div>
 
                         <div class="check-row">
@@ -92,6 +90,7 @@
             var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
             // ----- Reglas de cada campo (devuelven el mensaje de error, o '' si está bien) -----
+            // Que el correo exista y que la contraseña coincida lo decide el servidor (no se puede saber desde el navegador).
             var fields = {
                 email: {
                     input: document.getElementById('email'),
@@ -144,8 +143,6 @@
             });
 
             // ----- Enviar -----
-            // Aquí solo se valida el formato; quién es y si puede entrar lo decide el servidor
-            // (ver controllers/userController.js).
             form.addEventListener('submit', function (event) {
                 status.textContent = '';
                 status.className = 'form-status';

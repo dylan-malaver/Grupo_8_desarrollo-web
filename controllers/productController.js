@@ -1,9 +1,12 @@
 // =========================================================
 // CONTROLADOR de productos (con Sequelize / MySQL):
-// listado, búsqueda, detalle, carrito y administración (CRUD)
+// listado, búsqueda, detalle, carrito y administración (CRUD).
+// Las validaciones están en validations/productValidations.js (Express Validator).
 // =========================================================
+const fs = require('fs');
 const db = require('../database/models');
 const { toView } = require('../utils/productMapper');
+const { getErrors } = require('../validations/helpers');
 
 const { Op } = db.Sequelize;
 
@@ -12,6 +15,11 @@ const INCLUDE = [
     { model: db.Category, as: 'category' },
     { model: db.Color, as: 'colors', through: { attributes: [] } }
 ];
+
+// Borra la imagen que se acaba de subir (si el formulario falla)
+function removeUploaded(file) {
+    if (file && file.path) fs.unlink(file.path, () => {});
+}
 
 // Categorías y colores para los formularios y filtros
 async function getFormData() {
@@ -23,24 +31,20 @@ async function getFormData() {
     return { categories, colors };
 }
 
-// Lee y valida lo que llega del formulario de crear/editar
+// Lee lo que llegó del formulario (ya validado por Express Validator)
 function readForm(req) {
-    const name = (req.body.name || '').trim();
-    const summary = (req.body.summary || '').trim();
-    const description = (req.body.description || '').trim();
-    const category = (req.body.category || '').trim();
-    const price = Number(req.body.price);
     const colors = req.body.colors
         ? (Array.isArray(req.body.colors) ? req.body.colors : [req.body.colors])
         : [];
 
-    const valid = Boolean(
-        name && summary && description && category &&
-        Number.isInteger(price) && price >= 1 && price <= 9999999 &&
-        colors.length > 0
-    );
-
-    return { valid, name, summary, description, category, price, colors };
+    return {
+        name: req.body.name.trim(),
+        summary: req.body.summary.trim(),
+        description: req.body.description.trim(),
+        category: req.body.category.trim(),
+        price: Number(req.body.price),
+        colors
+    };
 }
 
 // Busca la categoría y los colores (por nombre) para guardar sus ids
@@ -106,7 +110,7 @@ const productController = {
     async create(req, res, next) {
         try {
             const { categories, colors } = await getFormData();
-            res.render('products/productCreate', { product: null, categories, colors });
+            res.render('products/productCreate', { product: null, categories, colors, errors: {}, old: null });
         } catch (error) {
             next(error);
         }
@@ -115,30 +119,23 @@ const productController = {
     // POST /admin/productos  ->  guardar un producto nuevo
     async store(req, res, next) {
         try {
+            const errors = getErrors(req);
+
+            if (Object.keys(errors).length > 0) {
+                removeUploaded(req.file);
+                const { categories, colors } = await getFormData();
+
+                return res.status(400).render('products/productCreate', {
+                    product: null,
+                    categories,
+                    colors,
+                    errors,
+                    old: req.body
+                });
+            }
+
             const form = readForm(req);
-
-            if (!form.valid) {
-                return res.status(400).send(
-                    '<h1>Datos inválidos</h1><p>Revisa los campos del formulario.</p>' +
-                    '<p><a href="/admin/productos/nuevo">Volver al formulario</a></p>'
-                );
-            }
-
-            if (!req.file) {
-                return res.status(400).send(
-                    '<h1>Falta la imagen</h1><p>Selecciona una imagen para el producto.</p>' +
-                    '<p><a href="/admin/productos/nuevo">Volver al formulario</a></p>'
-                );
-            }
-
             const { category, colors } = await findRelations(form.category, form.colors);
-
-            if (!category || colors.length === 0) {
-                return res.status(400).send(
-                    '<h1>Datos inválidos</h1><p>La categoría o los colores no existen.</p>' +
-                    '<p><a href="/admin/productos/nuevo">Volver al formulario</a></p>'
-                );
-            }
 
             const product = await db.Product.create({
                 name: form.name,
@@ -156,6 +153,7 @@ const productController = {
 
             return res.redirect('/admin/productos');
         } catch (error) {
+            removeUploaded(req.file);
             next(error);
         }
     },
@@ -168,7 +166,7 @@ const productController = {
             if (!row) return notFound(res, '/productos', 'Volver a los productos');
 
             const { categories, colors } = await getFormData();
-            res.render('products/productEdit', { product: toView(row), categories, colors });
+            res.render('products/productEdit', { product: toView(row), categories, colors, errors: {}, old: null });
         } catch (error) {
             next(error);
         }
@@ -177,28 +175,30 @@ const productController = {
     // PUT /products/:id (o POST /admin/productos/:id/editar)  ->  actualizar
     async update(req, res, next) {
         try {
-            const id = req.params.id;
-            const product = await db.Product.findByPk(id);
+            const row = await db.Product.findByPk(req.params.id, { include: INCLUDE });
 
-            if (!product) return notFound(res, '/admin/productos', 'Volver a administración');
+            if (!row) {
+                removeUploaded(req.file);
+                return notFound(res, '/admin/productos', 'Volver a administración');
+            }
+
+            const errors = getErrors(req);
+
+            if (Object.keys(errors).length > 0) {
+                removeUploaded(req.file);
+                const { categories, colors } = await getFormData();
+
+                return res.status(400).render('products/productEdit', {
+                    product: toView(row),
+                    categories,
+                    colors,
+                    errors,
+                    old: req.body
+                });
+            }
 
             const form = readForm(req);
-
-            if (!form.valid) {
-                return res.status(400).send(
-                    '<h1>Datos inválidos</h1><p>Revisa los campos del formulario.</p>' +
-                    '<p><a href="/admin/productos/' + encodeURIComponent(id) + '/editar">Volver al formulario</a></p>'
-                );
-            }
-
             const { category, colors } = await findRelations(form.category, form.colors);
-
-            if (!category || colors.length === 0) {
-                return res.status(400).send(
-                    '<h1>Datos inválidos</h1><p>La categoría o los colores no existen.</p>' +
-                    '<p><a href="/admin/productos/' + encodeURIComponent(id) + '/editar">Volver al formulario</a></p>'
-                );
-            }
 
             const changes = {
                 name: form.name,
@@ -213,11 +213,12 @@ const productController = {
             // Si se eligió otra imagen se cambia; si no, se conserva la anterior
             if (req.file) changes.image = req.file.filename;
 
-            await product.update(changes);
-            await product.setColors(colors);
+            await row.update(changes);
+            await row.setColors(colors);
 
             return res.redirect('/admin/productos');
         } catch (error) {
+            removeUploaded(req.file);
             next(error);
         }
     },
@@ -295,4 +296,4 @@ const productController = {
     }
 };
 
-module.exports = productController;
+   module.exports = productController;

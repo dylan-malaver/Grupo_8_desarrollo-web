@@ -1,8 +1,12 @@
 <%
+    // "product" viene solo al editar. "old" y "errors" vienen cuando el servidor rechazó el formulario.
     var isEdit = !!locals.product;
-    var p = locals.product || {};
-    var selectedColors = p.colors || [];
-    var imageUrl = isEdit && p.image ? '/img/' + p.image : '';
+    var base = locals.product || {};
+    var old = locals.old || null;
+    var fe = locals.errors || {};
+    var p = Object.assign({}, base, old || {});
+    var selectedColors = old ? [].concat(old.colors || []) : [].concat(base.colors || []);
+    var imageUrl = isEdit && base.image ? '/img/' + base.image : '';
 %>
 
 <div class="auth-layout">
@@ -30,7 +34,7 @@
     <div class="auth-panel auth-panel--card">
         <form id="product-form" method="POST" enctype="multipart/form-data"
               novalidate
-              action="<%= isEdit ? '/products/' + p.id + '?_method=PUT' : '/products' %>"
+              action="<%= isEdit ? '/products/' + base.id + '?_method=PUT' : '/products' %>"
               data-mode="<%= isEdit ? 'edit' : 'create' %>">
 
             <p class="auth-eyebrow is-caps">Administración</p>
@@ -47,23 +51,23 @@
 
             <% if (isEdit) { %>
                 <p class="form-meta">
-                    Editando: <strong><%= p.name %></strong> ·
-                    <a href="/detalle/<%= p.id %>" class="link-red">Ver en la tienda</a>
+                    Editando: <strong><%= base.name %></strong> ·
+                    <a href="/detalle/<%= base.id %>" class="link-red">Ver en la tienda</a>
                 </p>
             <% } %>
 
             <!-- Nombre -->
-            <div class="field">
+            <div class="field <%= fe.name ? 'has-error' : '' %>">
                 <label for="name">Nombre del producto</label>
                 <input type="text" id="name" name="name" maxlength="60"
                        placeholder="Ej. Ramo de Rosas Rojas"
                        value="<%= p.name || '' %>" required
                        aria-describedby="name-error">
-                <small class="field-error" id="name-error"></small>
+                <small class="field-error" id="name-error"><%= fe.name ? fe.name.msg : '' %></small>
             </div>
 
             <!-- Descripción corta -->
-            <div class="field">
+            <div class="field <%= fe.summary ? 'has-error' : '' %>">
                 <label for="summary">Descripción corta</label>
                 <input type="text" id="summary" name="summary" maxlength="100"
                        placeholder="Una frase para las tarjetas del catálogo"
@@ -77,11 +81,11 @@
                     <span class="field-hint" id="summary-count">0/100</span>
                 </div>
 
-                <small class="field-error" id="summary-error"></small>
+                <small class="field-error" id="summary-error"><%= fe.summary ? fe.summary.msg : '' %></small>
             </div>
 
             <!-- Descripción completa -->
-            <div class="field">
+            <div class="field <%= fe.description ? 'has-error' : '' %>">
                 <label for="description">Descripción</label>
                 <textarea id="description" name="description" rows="4"
                           maxlength="400"
@@ -91,32 +95,32 @@
 
                 <div class="hint-row">
                     <span class="field-hint" id="description-hint">
-                        Se muestra en la página del producto.
+                        Se muestra en la página del producto (mínimo 20 caracteres).
                     </span>
                     <span class="field-hint" id="description-count">0/400</span>
                 </div>
 
-                <small class="field-error" id="description-error"></small>
+                <small class="field-error" id="description-error"><%= fe.description ? fe.description.msg : '' %></small>
             </div>
 
             <!-- Imagen -->
-            <div class="field">
+            <div class="field <%= fe.image ? 'has-error' : '' %>">
                 <label for="image">Imagen</label>
                 <input type="file" id="image" name="image"
-                       accept="image/jpeg,image/png,image/webp"
+                       accept="image/jpeg,image/png,image/gif"
                        aria-describedby="image-error image-hint">
 
                 <span class="field-hint" id="image-hint">
                     <%= isEdit ? 'Déjala vacía para conservar la imagen actual. ' : '' %>
-                    JPG, PNG o WebP, máximo 2 MB.
+                    JPG, JPEG, PNG o GIF, máximo 2 MB.
                 </span>
 
-                <small class="field-error" id="image-error"></small>
+                <small class="field-error" id="image-error"><%= fe.image ? fe.image.msg : '' %></small>
             </div>
 
             <!-- Categoría y precio -->
             <div class="field-row">
-                <div class="field">
+                <div class="field <%= fe.category ? 'has-error' : '' %>">
                     <label for="category">Categoría</label>
                     <select id="category" name="category" required
                             aria-describedby="category-error">
@@ -130,10 +134,10 @@
                         <% }); %>
                     </select>
 
-                    <small class="field-error" id="category-error"></small>
+                    <small class="field-error" id="category-error"><%= fe.category ? fe.category.msg : '' %></small>
                 </div>
 
-                <div class="field">
+                <div class="field <%= fe.price ? 'has-error' : '' %>">
                     <label for="price">Precio</label>
                     <div class="price-field">
                         <span class="currency-prefix" aria-hidden="true">$</span>
@@ -146,12 +150,12 @@
                     </div>
 
                     <span class="field-hint" id="price-preview" aria-live="polite"></span>
-                    <small class="field-error" id="price-error"></small>
+                    <small class="field-error" id="price-error"><%= fe.price ? fe.price.msg : '' %></small>
                 </div>
             </div>
 
             <!-- Colores -->
-            <fieldset class="field field-group">
+            <fieldset class="field field-group <%= fe.colors ? 'has-error' : '' %>">
                 <legend>Colores</legend>
 
                 <div class="color-options">
@@ -168,7 +172,7 @@
                     <% }); %>
                 </div>
 
-                <small class="field-error" id="colors-error"></small>
+                <small class="field-error" id="colors-error"><%= fe.colors ? fe.colors.msg : '' %></small>
             </fieldset>
 
             <div class="form-actions">
@@ -176,7 +180,7 @@
                     <%= isEdit ? 'Guardar cambios' : 'Crear producto' %>
                 </button>
 
-                <a href="<%= isEdit ? '/detalle/' + p.id : '/productos' %>"
+                <a href="<%= isEdit ? '/detalle/' + base.id : '/productos' %>"
                    class="btn-cancel">Cancelar</a>
             </div>
 
@@ -196,7 +200,8 @@
     var isEdit = form.getAttribute('data-mode') === 'edit';
 
     var MAX_IMAGE_MB = 2;
-    var ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+    var ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif'];
+    var ALLOWED_EXT = /\.(jpe?g|png|gif)$/i;
 
     function byId(id) {
         return document.getElementById(id);
@@ -216,6 +221,7 @@
         return input.value.trim().length;
     }
 
+    // Son las mismas reglas que valida el servidor (validations/productValidations.js)
     var fields = {
         name: {
             controls: [nameInput],
@@ -223,7 +229,7 @@
             validate: function () {
                 var n = length(nameInput);
                 if (!n) return 'El nombre del producto es obligatorio';
-                if (n < 3) return 'El nombre debe tener mínimo 3 caracteres';
+                if (n < 5) return 'El nombre debe tener al menos 5 caracteres';
                 return '';
             }
         },
@@ -234,7 +240,7 @@
             validate: function () {
                 var n = length(summaryInput);
                 if (!n) return 'La descripción corta es obligatoria';
-                if (n < 10) return 'La descripción corta debe tener mínimo 10 caracteres';
+                if (n < 10) return 'La descripción corta debe tener al menos 10 caracteres';
                 return '';
             }
         },
@@ -245,7 +251,7 @@
             validate: function () {
                 var n = length(descriptionInput);
                 if (!n) return 'La descripción es obligatoria';
-                if (n < 20) return 'La descripción debe tener mínimo 20 caracteres';
+                if (n < 20) return 'La descripción debe tener al menos 20 caracteres';
                 return '';
             }
         },
@@ -260,12 +266,12 @@
                     return isEdit ? '' : 'Selecciona una imagen del producto';
                 }
 
-                if (ALLOWED_TYPES.indexOf(file.type) === -1) {
-                    return 'La imagen debe ser JPG, PNG o WebP';
+                if (ALLOWED_TYPES.indexOf(file.type) === -1 || !ALLOWED_EXT.test(file.name)) {
+                    return 'La imagen debe ser un archivo JPG, JPEG, PNG o GIF';
                 }
 
                 if (file.size > MAX_IMAGE_MB * 1024 * 1024) {
-                    return 'La imagen pesa más de ' + MAX_IMAGE_MB + ' MB';
+                    return 'La imagen no puede pesar más de ' + MAX_IMAGE_MB + ' MB';
                 }
 
                 return '';
@@ -291,7 +297,7 @@
                 if (!/^\d+$/.test(raw) ||
                     Number(raw) < 1 ||
                     Number(raw) > 9999999) {
-                    return 'Ingresa un precio válido: solo números enteros, mayor a 0';
+                    return 'Ingresa un precio válido: solo números enteros, mayor a 0 y hasta 9.999.999';
                 }
 
                 return '';
@@ -409,10 +415,9 @@
         previewEmpty.hidden = true;
     });
 
-    // Envío del formulario: un único evento submit
+    // Envío del formulario: solo se cancela si hay errores. Si todo está bien, el navegador
+    // envía el formulario y el servidor vuelve a validar (nunca confiamos solo en el navegador).
     form.addEventListener('submit', function (event) {
-        event.preventDefault();
-
         status.textContent = '';
         status.className = 'form-status';
 
@@ -425,40 +430,13 @@
         });
 
         if (firstInvalid) {
+            event.preventDefault();
             firstInvalid.focus();
             return;
         }
 
         status.className = 'form-status is-success';
-        status.textContent = 'Enviando producto...';
-
-        var formData = new FormData(form);
-        var submitButton = form.querySelector('button[type="submit"]');
-        submitButton.disabled = true;
-
-        fetch(form.action, {
-            method: 'POST',
-            body: formData
-        })
-            .then(function (response) {
-                if (response.redirected) {
-                    window.location.href = response.url;
-                    return;
-                }
-
-                if (!response.ok) {
-                    throw new Error('No se pudo guardar el producto.');
-                }
-
-                window.location.reload();
-            })
-            .catch(function (error) {
-                status.className = 'form-status';
-                status.textContent = error.message ||
-                    'Ocurrió un error al guardar el producto.';
-
-                submitButton.disabled = false;
-            });
+        status.textContent = 'Guardando producto...';
     });
 })();
 </script>

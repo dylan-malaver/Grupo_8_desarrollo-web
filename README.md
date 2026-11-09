@@ -239,4 +239,4 @@ Dylan Malaver
 Puedes seguir el progreso y la organización de nuestras tareas en el siguiente enlace:
 
 ## Tablero de trabajo
-Organización del proyecto (Sprint 6): https://github.com/users/dylan-malaver/projects/7/views/2
+Organización del proyecto (Sprint 7): https://github.com/users/dylan-malaver/projects/8/views/2

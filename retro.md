@@ -1,28 +1,27 @@
 
 ## Comenzar a hacer
-- Crear cada rama a partir de la rama anterior y verificar con `git log` que tiene mi código antes de empezar.
-- Abrir VS Code directamente en la carpeta interna del proyecto para no ejecutar comandos en la carpeta equivocada.
+- Probar cada validación apenas la escribo, con casos buenos y malos.
+- Escribir mensajes de error claros que le digan al usuario qué corregir.
 
 ## Hacer más
-- Probar cada funcionalidad apenas la termino (registro, login, perfil, cookies) en lugar de dejarlo para el final.
+- Probar el sitio con JavaScript desactivado, para comprobar que el servidor valida por sí solo.
 - Hacer commits pequeños después de cada parte que funciona.
 
 ## Continuar haciendo
-- Mantener la estructura MVC y separar rutas, controladores, middlewares y vistas.
-- Reutilizar los partials (head, header, footer).
-- Guardar las contraseñas encriptadas con bcrypt y validar los datos también en el servidor.
+- Separar el código en carpetas (rutas, controladores, validaciones, modelos y vistas).
+- Usar la base de datos MySQL con Sequelize en lugar de archivos JSON.
+- Guardar las contraseñas encriptadas.
 
 ## Hacer menos
-- Ejecutar comandos de Git sin revisar antes con `git status` y `git branch` en qué rama estoy.
-- Depender de datos de prueba en archivos JSON.
+- Ejecutar comandos sin comprobar en qué carpeta y en qué rama estoy.
 
 ## Dejar de hacer
-- Crear ramas desde la página de GitHub sin comprobar de qué commit parten: las ramas Sprint-5 y Sprint-6 quedaron copiadas de `main` y hubo que reemplazarlas.
+- Crear ramas desde la página de GitHub sin revisar de qué commit parten.
 
 ## Principales dificultades
-- El historial de la rama Sprint-5 en GitHub era distinto al local y tuve que resolverlo con un stash y un push con `--force-with-lease`.
-- Los comandos de Git con llaves (`stash@{0}`) fallaron en PowerShell hasta que los escribí entre comillas.
-- Confundir la carpeta externa con la interna del proyecto al ejecutar `npm`.
+- Entender cómo se relacionan las tablas (por ejemplo, productos y colores en una relación muchos a muchos).
+- Pasar el CRUD de archivos JSON a Sequelize, porque cambian los ids y la forma de leer los datos.
+- Un archivo se cortó al copiarlo y el sitio no arrancaba; lo resolví leyendo el error de la terminal.
 
 ## Aprendizajes
-Los middlewares permiten reutilizar la lógica de acceso (huéspedes, usuarios y recordar sesión) sin repetir código, y las sesiones y cookies son la base de cualquier sitio con usuarios.
+Una base de datos bien diseñada y Sequelize hacen el sitio más ordenado y escalable, y separar el modelo, las rutas, los controladores y las vistas facilita encontrar y corregir errores.

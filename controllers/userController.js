@@ -1,6 +1,7 @@
 // =========================================================
 // CONTROLADOR de usuarios (con Sequelize / MySQL):
-// registro, login, perfil (detalle), edición de perfil y logout
+// registro, login, perfil (detalle), edición de perfil y logout.
+// Las validaciones están en validations/userValidations.js (Express Validator).
 // =========================================================
 const fs = require('fs');
 const path = require('path');
@@ -8,8 +9,8 @@ const bcrypt = require('bcryptjs');
 
 const db = require('../database/models');
 const { toSession } = require('../utils/userMapper');
+const { getErrors } = require('../validations/helpers');
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const AVATAR_DIR = path.join(__dirname, '..', 'public', 'img', 'users');
 const INCLUDE_CATEGORY = [{ model: db.UserCategory, as: 'category' }];
 
@@ -33,52 +34,35 @@ function safeRedirect(url) {
 const userController = {
     // ---------- REGISTRO ----------
     register(req, res) {
-        res.render('users/register', { error: null, old: {} });
+        res.render('users/register', { errors: {}, old: {} });
     },
 
     async registerSubmit(req, res, next) {
         try {
-            const { fullname = '', email = '', phone = '', password = '', confirmPassword = '', terms } = req.body;
+            const errors = getErrors(req);
 
-            const fail = (message) => {
+            if (Object.keys(errors).length > 0) {
                 removeUploaded(req.file);
                 return res.status(400).render('users/register', {
-                    error: message,
-                    old: { fullname, email, phone }
+                    errors,
+                    old: { fullname: req.body.fullname, email: req.body.email, phone: req.body.phone }
                 });
-            };
-
-            const name = fullname.trim();
-            const digits = phone.replace(/\D/g, '');
-
-            if (name.length < 3) return fail('Escribe tu nombre completo (mínimo 3 letras).');
-            if (!EMAIL_RE.test(email.trim())) return fail('Ingresa un correo válido.');
-            if (digits.length < 10) return fail('Ingresa un número de teléfono válido.');
-            if (password.length < 6) return fail('La contraseña debe tener mínimo 6 caracteres.');
-            if (password !== confirmPassword) return fail('Las contraseñas no coinciden.');
-            if (!terms) return fail('Debes aceptar los términos y la política de privacidad.');
-
-            const cleanEmail = email.trim().toLowerCase();
-
-            if (await db.User.findOne({ where: { email: cleanEmail } })) {
-                return fail('Ya existe una cuenta con ese correo.');
             }
 
             const clientCategory = await db.UserCategory.findOne({ where: { name: 'cliente' } });
 
             if (!clientCategory) {
-                removeUploaded(req.file);
                 throw new Error('Falta la categoría "cliente" en la tabla user_categories (importa data.sql).');
             }
 
-            const parts = name.split(/\s+/);
+            const parts = req.body.fullname.trim().split(/\s+/);
 
             await db.User.create({
                 first_name: parts[0],
                 last_name: parts.slice(1).join(' '),
-                email: cleanEmail,
-                phone: phone.trim(),
-                password: bcrypt.hashSync(password, 10), // contraseña encriptada
+                email: req.body.email.trim().toLowerCase(),
+                phone: req.body.phone.trim(),
+                password: bcrypt.hashSync(req.body.password, 10), // contraseña encriptada
                 image: req.file ? req.file.filename : null,
                 user_category_id: clientCategory.id
             });
@@ -93,25 +77,30 @@ const userController = {
     // ---------- LOGIN ----------
     login(req, res) {
         res.render('users/login', {
-            error: null,
+            errors: {},
+            old: {},
             redirectTo: req.query.redirect || '/admin/productos'
         });
     },
 
     async loginSubmit(req, res, next) {
         try {
-            const email = (req.body.email || '').trim().toLowerCase();
-            const password = req.body.password || '';
             const redirectTo = safeRedirect(req.body.redirectTo);
+            const errors = getErrors(req);
 
-            const user = await db.User.findOne({ where: { email }, include: INCLUDE_CATEGORY });
-
-            if (!user || !bcrypt.compareSync(password, user.password)) {
-                return res.status(401).render('users/login', {
-                    error: 'El correo o la contraseña no son correctos.',
+            if (Object.keys(errors).length > 0) {
+                return res.status(400).render('users/login', {
+                    errors,
+                    old: { email: req.body.email },
                     redirectTo
                 });
             }
+
+            // Los datos ya fueron validados: el correo existe y la contraseña coincide
+            const user = await db.User.findOne({
+                where: { email: req.body.email.trim().toLowerCase() },
+                include: INCLUDE_CATEGORY
+            });
 
             req.session.user = toSession(user);
             req.session.isAdmin = req.session.user.category === 'admin';
@@ -152,7 +141,7 @@ const userController = {
 
             if (!user) return req.session.destroy(() => res.redirect('/login'));
 
-            res.render('users/profileEdit', { user: toSession(user), error: null, old: {} });
+            res.render('users/profileEdit', { user: toSession(user), errors: {}, old: {} });
         } catch (error) {
             next(error);
         }
@@ -168,37 +157,28 @@ const userController = {
                 return req.session.destroy(() => res.redirect('/login'));
             }
 
-            const firstName = (req.body.first_name || '').trim();
-            const lastName = (req.body.last_name || '').trim();
-            const phone = (req.body.phone || '').trim();
-            const currentPassword = req.body.currentPassword || '';
-            const newPassword = req.body.newPassword || '';
-            const confirmPassword = req.body.confirmPassword || '';
+            const errors = getErrors(req);
 
-            const fail = (message) => {
+            if (Object.keys(errors).length > 0) {
                 removeUploaded(req.file);
                 return res.status(400).render('users/profileEdit', {
                     user: toSession(user),
-                    error: message,
-                    old: { first_name: firstName, last_name: lastName, phone }
+                    errors,
+                    old: {
+                        first_name: req.body.first_name,
+                        last_name: req.body.last_name,
+                        phone: req.body.phone
+                    }
                 });
+            }
+
+            const changes = {
+                first_name: req.body.first_name.trim(),
+                last_name: (req.body.last_name || '').trim(),
+                phone: req.body.phone.trim()
             };
 
-            if (firstName.length < 2) return fail('El nombre debe tener mínimo 2 letras.');
-            if (phone.replace(/\D/g, '').length < 10) return fail('Ingresa un número de teléfono válido.');
-
-            const changes = { first_name: firstName, last_name: lastName, phone };
-
-            // Cambiar la contraseña es opcional y exige la contraseña actual
-            if (newPassword) {
-                if (!bcrypt.compareSync(currentPassword, user.password)) {
-                    return fail('La contraseña actual no es correcta.');
-                }
-                if (newPassword.length < 6) return fail('La nueva contraseña debe tener mínimo 6 caracteres.');
-                if (newPassword !== confirmPassword) return fail('Las contraseñas nuevas no coinciden.');
-
-                changes.password = bcrypt.hashSync(newPassword, 10);
-            }
+            if (req.body.newPassword) changes.password = bcrypt.hashSync(req.body.newPassword, 10);
 
             const oldImage = user.image;
             if (req.file) changes.image = req.file.filename;
