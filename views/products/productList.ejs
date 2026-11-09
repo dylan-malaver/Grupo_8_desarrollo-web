@@ -13,9 +13,26 @@
                 <a href="/">Inicio</a> / <span aria-current="page">Productos</span>
             </nav>
             <h1 class="cart-title">
-                <%= current ? current.name : 'Todos los productos' %>
+                <%= current ? current.name : (q ? 'Resultados de la búsqueda' : 'Todos los productos') %>
             </h1>
             <p class="cart-subtitle">Explora nuestro catálogo de flores y arreglos</p>
+        </section>
+
+        <!-- ===== Buscador ===== -->
+        <section class="product-search-box">
+            <form action="/productos" method="GET" role="search"
+                  style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:16px 0;">
+                <% if (current) { %>
+                    <input type="hidden" name="categoria" value="<%= current.slug %>">
+                <% } %>
+                <input type="search" name="q" value="<%= q %>" maxlength="60"
+                       placeholder="Buscar productos..." aria-label="Buscar productos"
+                       style="padding:10px 14px;min-width:240px;border:1px solid #ccc;border-radius:8px;">
+                <button type="submit" class="btn-rose">Buscar</button>
+                <% if (q) { %>
+                    <a href="/productos<%= current ? '?categoria=' + current.slug : '' %>" class="btn-keep">Limpiar</a>
+                <% } %>
+            </form>
         </section>
 
         <!-- ===== Filtro por categorías ===== -->
@@ -32,7 +49,13 @@
         <section class="products">
             <div class="product-grid">
                 <% if (products.length === 0) { %>
-                    <p>No hay productos en esta categoría todavía.</p>
+                    <p>
+                        <% if (q) { %>
+                            No encontramos productos para "<%= q %>".
+                        <% } else { %>
+                            No hay productos en esta categoría todavía.
+                        <% } %>
+                    </p>
                 <% } else { %>
                     <% products.forEach(function (item) { %>
                         <%- include('../partials/product-card', { product: item }) %>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<%- include('../partials/head', { title: 'Editar perfil | Floristería Andrea', styles: ['/css/auth.css'] }) %>
+<%
+    var o = locals.old || {};
+    var firstName = o.first_name !== undefined ? o.first_name : user.firstName;
+    var lastName = o.last_name !== undefined ? o.last_name : user.lastName;
+    var phone = o.phone !== undefined ? o.phone : user.phone;
+%>
+<body>
+
+    <%- include('../partials/header') %>
+
+    <main>
+        <section class="auth-crumb">
+            <nav class="auth-breadcrumb" aria-label="Ruta de navegación">
+                <a href="/">Inicio</a> / <a href="/perfil">Mi perfil</a> / <span aria-current="page">Editar</span>
+            </nav>
+        </section>
+
+        <section class="auth-section">
+            <div class="auth-panel auth-panel--card" style="max-width:560px;margin:0 auto;">
+                <form method="POST" action="/perfil?_method=PUT" enctype="multipart/form-data">
+                    <p class="auth-eyebrow is-caps">Mi Cuenta</p>
+                    <h1 class="auth-title">Editar perfil</h1>
+                    <p class="auth-lead">Actualiza tus datos. El correo no se puede cambiar.</p>
+
+                    <% if (locals.error && error) { %>
+                        <p class="form-status is-error" role="alert"><%= error %></p>
+                    <% } %>
+
+                    <div class="field">
+                        <label for="first_name">Nombre</label>
+                        <input type="text" id="first_name" name="first_name" value="<%= firstName %>" maxlength="60" required>
+                    </div>
+
+                    <div class="field">
+                        <label for="last_name">Apellido</label>
+                        <input type="text" id="last_name" name="last_name" value="<%= lastName %>" maxlength="60">
+                    </div>
+
+                    <div class="field">
+                        <label for="email">Correo electrónico</label>
+                        <input type="email" id="email" value="<%= user.email %>" disabled>
+                    </div>
+
+                    <div class="field">
+                        <label for="phone">Número de teléfono</label>
+                        <input type="tel" id="phone" name="phone" value="<%= phone %>" required>
+                    </div>
+
+                    <div class="field">
+                        <label for="image">Foto de perfil</label>
+                        <% if (user.image) { %>
+                            <img src="/img/users/<%= user.image %>" alt="Foto actual" width="80" height="80"
+                                 style="border-radius:50%;object-fit:cover;display:block;margin-bottom:8px;">
+                        <% } %>
+                        <input type="file" id="image" name="image" accept="image/png, image/jpeg, image/webp">
+                        <small>Déjala vacía para conservar la actual. JPG, PNG o WebP, máximo 2 MB.</small>
+                    </div>
+
+                    <hr>
+                    <p><strong>Cambiar contraseña</strong> <small>(opcional)</small></p>
+
+                    <div class="field">
+                        <label for="currentPassword">Contraseña actual</label>
+                        <input type="password" id="currentPassword" name="currentPassword" autocomplete="current-password">
+                    </div>
+
+                    <div class="field">
+                        <label for="newPassword">Nueva contraseña</label>
+                        <input type="password" id="newPassword" name="newPassword" autocomplete="new-password">
+                    </div>
+
+                    <div class="field">
+                        <label for="confirmPassword">Confirmar nueva contraseña</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" autocomplete="new-password">
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-submit">Guardar cambios</button>
+                        <a href="/perfil" class="btn-cancel">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <%- include('../partials/footer') %>
+
+</body>
+</html>

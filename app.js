@@ -62,6 +62,12 @@ app.use((req, res) => {
     res.status(404).send('<h1>Página no encontrada</h1><p><a href="/">Volver al inicio</a></p>');
 });
 
+// Errores inesperados (por ejemplo, si la base de datos no responde)
+app.use((err, req, res, next) => {
+    console.error(err);
+    res.status(500).send('<h1>Ocurrió un error</h1><p><a href="/">Volver al inicio</a></p>');
+});
+
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
